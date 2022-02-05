@@ -11,13 +11,10 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 load_dotenv()
 
-# still to do
+# still to do before public release
 
-# on guild remove delete everything from the db
 # view guild config
-# remove bots from databases at guild owners request
-# ensure that command permissions are working fine
-# stats command
+# remove a singular bot from the db instead of just every bot
 
 cluster = MongoClient(os.environ.get("mongo"))
 db = cluster["discord"]
@@ -41,6 +38,20 @@ async def on_ready():  # When the bot is ready
     await bot.change_presence(activity=diskord.Activity(type=diskord.ActivityType.watching, name="over your bots!"))
     print(bot.user)  # Prints the bot's username and identifier
 
+@bot.slash_command(guild_ids=[842044695269736498],description="Give some information about the bot")
+async def stats(ctx):
+  members = 0
+  for guild in bot.guilds:
+    members += guild.member_count - 1
+
+  
+  embed=diskord.Embed(title="Bot Stats")
+  embed.set_author(name="Made by SamBot#7421", url="https://github.com/wotanut", icon_url="https://images-ext-1.discordapp.net/external/_AQsXtlNs4EPEJ372GCGJuu9pp4Ws5wWJ_Ob_smuxmQ/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/705798778472366131/0f60b85c80cda940209cfd035109d7ef.png")
+  embed.add_field(name="Guilds", value=f"```{len(bot.guilds)}```", inline=True) 
+  embed.add_field(name="Users", value=f"```{members}```", inline=True)
+  embed.set_footer(text="Thank you for supporting status checker")
+  await ctx.respond(embed=embed)
+
 @bot.slash_command(guild_ids=[842044695269736498],description="Check the status of a bot")
 @diskord.application.option('user', description='The user to check the status of')
 async def status(ctx,user:diskord.User):
@@ -58,7 +69,25 @@ async def status(ctx,user:diskord.User):
       else:
         await ctx.respond(f"<:offline:844536738512896020> {user.mention} is offline")
 
+@bot.slash_command(guild_ids=[842044695269736498],description="Clears every mention of your guild from the database")
+@diskord.application.option('user', description='The bot to remove from the database')
+@commands.has_permissions(manage_channels=True)
+async def remove(ctx, user:diskord.User = None):
+  if not user.bot:
+    await ctx.respond("You can only remove a bot from the database")
+    return
+  
+  if user == None:
+    collection.update_many( { }, { '$unset': { str(ctx.guild.id): '' } } )
+    await ctx.respond(f"Removed all mentions of {ctx.guild.name} from the database")
+  else:
+    collection.update_one( {"_id": str(user.id) }, { '$unset': { str(ctx.guild.id): '' } } )
+    await ctx.respond(f"Removed {user.mention} from the database")
 
+
+@bot.event
+async def on_guild_remove(guild):
+    collection.update_many( { }, { '$unset': { str(guild.id): '' } } )
 
 @bot.slash_command(guild_ids=[842044695269736498],description="Check the latency of a bot")
 async def ping(ctx):
@@ -107,9 +136,15 @@ async def add(ctx, channel: diskord.abc.GuildChannel, user: diskord.User, down_m
 
 @bot.slash_command(guild_ids=[842044695269736498],description="Get a link to invite the bot")
 async def invite(ctx):
-  user = bot.get_user(ctx.author.id)
-  await user.send("https://dsc.gg/status-checker")
-  await ctx.respond("<:success:844896295054213171>")
+  await ctx.respond("https://dsc.gg/status-checker")
+
+@bot.slash_command(guild_ids=[842044695269736498],description="View the bots privacy policy")
+async def privacy(ctx):
+  await ctx.respond("https://bit.ly/SC-Privacy-Policy")
+
+@bot.slash_command(guild_ids=[842044695269736498],description="View the bots Terms Of Service")
+async def terms(ctx):
+  await ctx.respond("https://bit.ly/SC-TOS")
 
 @bot.event
 async def on_member_update(before,after):
@@ -155,6 +190,8 @@ async def on_member_update(before,after):
   except Exception as e:
     print(e)
     return
+
+
 
 keep_alive()  # Starts a webserver to be pinged.
 token = os.environ.get("DISCORD_BOT_SECRET") 

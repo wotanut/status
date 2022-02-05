@@ -14,8 +14,6 @@ load_dotenv()
 # still to do before public release
 
 # view guild config
-# make on_member_update only fire ONCE
-
 
 cluster = MongoClient(os.environ.get("mongo"))
 db = cluster["discord"]
@@ -120,6 +118,7 @@ async def add(ctx, channel: diskord.abc.GuildChannel, user: diskord.User, down_m
     channel = bot.get_channel(int(channel.id))
   except Exception as e:
     await ctx.respond(f"Failed to get channel, this is usually becuase I do not have access or the channel does not exist. \n Error: || {e} ||")
+    return
 
   if type(channel) != diskord.channel.TextChannel:
     await ctx.respond("That doesn't look like a text channel to me")

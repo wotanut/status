@@ -14,7 +14,7 @@ load_dotenv()
 # still to do before public release
 
 # view guild config
-# remove a singular bot from the db instead of just every bot
+
 
 cluster = MongoClient(os.environ.get("mongo"))
 db = cluster["discord"]
@@ -81,7 +81,7 @@ async def remove(ctx, user:diskord.User = None):
     collection.update_many( { }, { '$unset': { str(ctx.guild.id): '' } } )
     await ctx.respond(f"Removed all mentions of {ctx.guild.name} from the database")
   else:
-    collection.update_one( {"_id": str(user.id) }, { '$unset': { str(ctx.guild.id): '' } } )
+    collection.update_one({"_id": user.id}, {"$unset" : {f"{ctx.guild.id}":""}})
     await ctx.respond(f"Removed {user.mention} from the database")
 
 
@@ -146,15 +146,21 @@ async def privacy(ctx):
 async def terms(ctx):
   await ctx.respond("https://bit.ly/SC-TOS")
 
+updated = []
+  
 @bot.event
-async def on_member_update(before,after):
+async def on_presence_update(before,after):
   if not before.bot:
     return
 
   if before.status == after.status:
     return
 
+  if before.id in updated:
+    return
     
+  updated.append(before.id)
+      
   user = bot.get_user(before.id)
   try:
     results = collection.find()
@@ -184,12 +190,17 @@ async def on_member_update(before,after):
               
               down_msg = await channel.send(down_message)
               if auto_publish == True:
-                print("publishing down message")
-                await down_msg.publish()
+                try:
+                  await down_msg.publish()
+                except:
+                  pass
             
   except Exception as e:
     print(e)
-    return
+    pass
+  await asyncio.sleep(10)
+  updated.remove(before.id)
+  
 
 
 

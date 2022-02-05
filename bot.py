@@ -14,6 +14,7 @@ load_dotenv()
 # still to do before public release
 
 # view guild config
+# make on_member_update only fire ONCE
 
 
 cluster = MongoClient(os.environ.get("mongo"))
@@ -37,6 +38,18 @@ async def on_ready():  # When the bot is ready
     print("I'm in")
     await bot.change_presence(activity=diskord.Activity(type=diskord.ActivityType.watching, name="over your bots!"))
     print(bot.user)  # Prints the bot's username and identifier
+
+@bot.slash_command(guild_ids=[842044695269736498],description="Get some help about the bot")
+async def help(ctx):
+  embed=diskord.Embed(title="FAQ", url="https://github.com/wotanut", color=0x258d58)
+  embed.set_author(name="Made by Sambot#7421", url="https://github.com/wotanut", icon_url="https://images-ext-1.discordapp.net/external/_AQsXtlNs4EPEJ372GCGJuu9pp4Ws5wWJ_Ob_smuxmQ/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/705798778472366131/0f60b85c80cda940209cfd035109d7ef.png")
+  embed.add_field(name="What is this bot?", value="Status checker is a bot that was made to instantly inform you and your users of when your bot goes offline.", inline=False)
+  embed.add_field(name="Why did you make this bot?", value="In the early horus of March 12th 2021 OVH burned down. Mine and many other discord bots were down for hours. I decided to try and find a bot that could do what Status Checker did but found none.", inline=False)
+  embed.add_field(name="Can I track my members with this?", value="No, this bot tracks **OTHER BOTS ONLY**", inline=False)
+  embed.add_field(name="Can I self host this bot?", value="Yes but I don't recommend it. If you want to find the source code please have a dig around my GitHub profile. I will not link directly to it to discourage you from trying to self host it.", inline=False)
+  embed.add_field(name="I have a bug to report", value="please do so in our [support server ](https://discord.gg/uNKfBdQHUx)", inline=True)
+  embed.add_field(name="How do I get started?", value="/add", inline=True)
+  await ctx.respond(embed=embed)
 
 @bot.slash_command(guild_ids=[842044695269736498],description="Give some information about the bot")
 async def stats(ctx):

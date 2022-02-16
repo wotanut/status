@@ -5,7 +5,6 @@ from diskord import Embed
 from diskord.ext import commands,tasks
 from asyncio import sleep
 import asyncio
-import re
 import pymongo
 from pymongo import MongoClient
 from dotenv import load_dotenv
@@ -26,7 +25,7 @@ intents.members = True
 bot = commands.Bot(
 	command_prefix="s!",  # Change to desired prefix
 	case_insensitive=True,# Commands aren't case-sensitive
-  intents=intents,  #enables intents
+  intents=intents,   #enables intents
 )
 
 bot.author_id = 705798778472366131  # Change to your discord id!!!
@@ -125,6 +124,9 @@ async def add(ctx, channel: diskord.abc.GuildChannel, user: diskord.User, down_m
     return
   if auto_publish == True and channel.is_news() == False:
     auto_publish = False
+  if user == bot.user.id:
+    await ctx.respond("You cannot add me for status checks\nYou can only add other bots")
+    return
     
     
   # get the bot

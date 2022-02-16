@@ -25,7 +25,7 @@ intents.members = True
 bot = commands.Bot(
 	command_prefix="s!",  # Change to desired prefix
 	case_insensitive=True,# Commands aren't case-sensitive
-  intents=intents,   #enables intents
+  intents=intents,  #enables intents
 )
 
 bot.author_id = 705798778472366131  # Change to your discord id!!!

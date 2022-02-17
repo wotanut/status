@@ -1,11 +1,8 @@
 import os
 from keep_alive import keep_alive
 import diskord
-from diskord import Embed
-from diskord.ext import commands,tasks
-from asyncio import sleep
+from diskord.ext import commands
 import asyncio
-import pymongo
 from pymongo import MongoClient
 from dotenv import load_dotenv
 load_dotenv()
@@ -42,9 +39,9 @@ async def help(ctx):
   embed.set_author(name="Made by Sambot#7421", url="https://github.com/wotanut", icon_url="https://images-ext-1.discordapp.net/external/_AQsXtlNs4EPEJ372GCGJuu9pp4Ws5wWJ_Ob_smuxmQ/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/705798778472366131/0f60b85c80cda940209cfd035109d7ef.png")
   embed.add_field(name="What is this bot?", value="Status checker is a bot that was made to instantly inform you and your users of when your bot goes offline.", inline=False)
   embed.add_field(name="Why did you make this bot?", value="In the early horus of March 12th 2021 OVH burned down. Mine and many other discord bots were down for hours. I decided to try and find a bot that could do what Status Checker did but found none.", inline=False)
-  embed.add_field(name="Can I track my members with this?", value="No, this bot tracks **OTHER BOTS ONLY**", inline=False)
+  embed.add_field(name="Can I track my members with this?", value="No, this bot tracks **other bots only**", inline=False)
   embed.add_field(name="Can I self host this bot?", value="Yes but I don't recommend it. If you want to find the source code please have a dig around my GitHub profile. I will not link directly to it to discourage you from trying to self host it.", inline=False)
-  embed.add_field(name="I have a bug to report", value="please do so in our [support server ](https://discord.gg/uNKfBdQHUx)", inline=True)
+  embed.add_field(name="I have a bug to report", value="Please do so in our [support server ](https://discord.gg/uNKfBdQHUx)", inline=True)
   embed.add_field(name="How do I get started?", value="/add", inline=True)
   await ctx.respond(embed=embed)
 
@@ -128,15 +125,23 @@ async def add(ctx, channel: diskord.abc.GuildChannel, user: diskord.User, down_m
     await ctx.respond("You cannot add me for status checks\nYou can only add other bots")
     return
     
-    
   # get the bot
-
   if not user.bot:
     await ctx.send("For privacy reasons I can only track bots")
     return
 
+  # Instead of try/catch, just check for permissions
+  permissionsInChannel = channel.permissions_for(channel.guild.me)
+  if not permissionsInChannel.send_messages: 
+    await ctx.respond("I cannot send messages in that channel")
+    return
+  if not permissionsInChannel.manage_messages: # Needed to be able to publish messages in an announcements channel
+    await ctx.respond("I cannot manage messages in that channel")
+    return
+  
+  # If bot has all needed permissions, send a message in that channel (and catch the error if it fails somehow)
   try:
-    message = await channel.send(f"<a:loading:844891826934251551> Loading Status Checker information")
+    message = await channel.send("<a:loading:844891826934251551> Loading Status Checker information")
   except:
     await ctx.respond("I do not have permissions to send messages in that channel")
     return
@@ -146,6 +151,7 @@ async def add(ctx, channel: diskord.abc.GuildChannel, user: diskord.User, down_m
   except:
     collection.update_one({"_id": user.id}, {"$set" : {f"{ctx.guild.id}": [channel.id,message.id,down_message,auto_publish]}})
 
+  await message.edit(content=f"Status Checker information loaded\nWatching {user.mention}")
   await ctx.respond(f"Watching {user.mention} I will alert you if their status changes")
 
 @bot.slash_command(guild_ids=[842044695269736498],description="Get a link to invite the bot")

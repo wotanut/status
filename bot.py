@@ -33,7 +33,7 @@ async def on_ready():  # When the bot is ready
     await bot.change_presence(activity=diskord.Activity(type=diskord.ActivityType.watching, name="over your bots!"))
     print(bot.user)  # Prints the bot's username and identifier
 
-@bot.slash_command(guild_ids=[842044695269736498],description="Get some help about the bot")
+@bot.slash_command(description="Get some help about the bot")
 async def help(ctx):
   embed=diskord.Embed(title="FAQ", url="https://github.com/wotanut", color=0x258d58)
   embed.set_author(name="Made by Sambot#7421", url="https://github.com/wotanut", icon_url="https://images-ext-1.discordapp.net/external/_AQsXtlNs4EPEJ372GCGJuu9pp4Ws5wWJ_Ob_smuxmQ/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/705798778472366131/0f60b85c80cda940209cfd035109d7ef.png")
@@ -45,7 +45,7 @@ async def help(ctx):
   embed.add_field(name="How do I get started?", value="/add", inline=True)
   await ctx.respond(embed=embed)
 
-@bot.slash_command(guild_ids=[842044695269736498],description="Give some information about the bot")
+@bot.slash_command(description="Give some information about the bot")
 async def stats(ctx):
   members = 0
   for guild in bot.guilds:
@@ -59,7 +59,7 @@ async def stats(ctx):
   embed.set_footer(text="Thank you for supporting status checker")
   await ctx.respond(embed=embed)
 
-@bot.slash_command(guild_ids=[842044695269736498],description="Check the status of a bot")
+@bot.slash_command(description="Check the status of a bot")
 @diskord.application.option('user', description='The user to check the status of')
 async def status(ctx,user:diskord.User):
   if not user.bot:
@@ -76,7 +76,7 @@ async def status(ctx,user:diskord.User):
       else:
         await ctx.respond(f"<:offline:844536738512896020> {user.mention} is offline")
 
-@bot.slash_command(guild_ids=[842044695269736498],description="Clears every mention of your guild from the database")
+@bot.slash_command(description="Clears every mention of your guild from the database")
 @diskord.application.option('user', description='The bot to remove from the database')
 @commands.has_permissions(manage_channels=True)
 async def remove(ctx, user:diskord.User = None):
@@ -96,11 +96,11 @@ async def remove(ctx, user:diskord.User = None):
 async def on_guild_remove(guild):
     collection.update_many( { }, { '$unset': { str(guild.id): '' } } )
 
-@bot.slash_command(guild_ids=[842044695269736498],description="Check the latency of a bot")
+@bot.slash_command(description="Check the latency of a bot")
 async def ping(ctx):
   await ctx.respond(f':ping_pong: Pong!\n **Bot**: {round(bot.latency * 1000)} ms')  
 
-@bot.slash_command(guild_ids=[842044695269736498],description="Adds a bot to watch for status changes")
+@bot.slash_command(description="Adds a bot to watch for status changes")
 @diskord.application.option('channel', description='The Channel to send down messages to')
 @diskord.application.option('user', description='The user to watch the status of')
 @diskord.application.option('down_message', description='The down message to send to the channel')
@@ -154,15 +154,15 @@ async def add(ctx, channel: diskord.abc.GuildChannel, user: diskord.User, down_m
   await message.edit(content=f"Status Checker information loaded\nWatching {user.mention}")
   await ctx.respond(f"Watching {user.mention} I will alert you if their status changes")
 
-@bot.slash_command(guild_ids=[842044695269736498],description="Get a link to invite the bot")
+@bot.slash_command(description="Get a link to invite the bot")
 async def invite(ctx):
   await ctx.respond("https://dsc.gg/status-checker")
 
-@bot.slash_command(guild_ids=[842044695269736498],description="View the bots privacy policy")
+@bot.slash_command(description="View the bots privacy policy")
 async def privacy(ctx):
   await ctx.respond("https://bit.ly/SC-Privacy-Policy")
 
-@bot.slash_command(guild_ids=[842044695269736498],description="View the bots Terms Of Service")
+@bot.slash_command(description="View the bots Terms Of Service")
 async def terms(ctx):
   await ctx.respond("https://bit.ly/SC-TOS")
 

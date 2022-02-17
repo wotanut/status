@@ -36,7 +36,7 @@ async def on_ready():  # When the bot is ready
 @bot.slash_command(description="Get some help about the bot")
 async def help(ctx):
   embed=diskord.Embed(title="FAQ", url="https://github.com/wotanut", color=0x258d58)
-  embed.set_author(name="Made by Sambot#7421", url="https://github.com/wotanut", icon_url="https://images-ext-1.discordapp.net/external/_AQsXtlNs4EPEJ372GCGJuu9pp4Ws5wWJ_Ob_smuxmQ/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/705798778472366131/0f60b85c80cda940209cfd035109d7ef.png")
+  embed.set_author(name="Made by Sambot#7421", url="https://github.com/wotanut")
   embed.add_field(name="What is this bot?", value="Status checker is a bot that was made to instantly inform you and your users of when your bot goes offline.", inline=False)
   embed.add_field(name="Why did you make this bot?", value="In the early horus of March 12th 2021 OVH burned down. Mine and many other discord bots were down for hours. I decided to try and find a bot that could do what Status Checker did but found none.", inline=False)
   embed.add_field(name="Can I track my members with this?", value="No, this bot tracks **other bots only**", inline=False)

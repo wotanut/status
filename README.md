@@ -16,14 +16,14 @@ Yes it's that simple, add status checker today and let your members know of down
 
 # Self Hosting
 
-I Kindly ask that you don't for the following reasons
+I kindly ask that you don't for the following reasons:
 - You have to sort out and pay for a host
 - When it goes wrong (and it will) you'll flood our support channels asking for help, they are not for this and no help will be provided
 - Your bot won't stay up to date with latest vunerabilities / changes in code
 
 # Contributing
 
-Just fork this repository and open a pul request, all contributions are welcome. Just please ensure that your discord username AND TAG are in the pull reuest so I can give you the contributors role.
+Just fork this repository and open a pull request, all contributions are welcome. Just please ensure that your discord username AND TAG are in the pull reuest so I can give you the contributors role.
 
 # Useful Links
 

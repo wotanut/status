@@ -68,13 +68,13 @@ async def status(ctx,user:diskord.User):
   for i in ctx.guild.members:
     if i.id == user.id:
       if str(i.status) == 'online':
-          await ctx.respond(f"<:online:844536822972284948>  {user.mention} is online")
+          await ctx.respond(f"<:online:844536822972284948> {user.mention} is online.")
       elif str(i.status) == 'idle':
-        await ctx.respond(f"<:idle:852891603264602172> {user.mention} is on idle")
+        await ctx.respond(f"<:idle:852891603264602172> {user.mention} is idle.")
       elif str(i.status) == 'dnd':
-        await ctx.respond(f"<:dnd:852891721771515934> {user.mention} is on do not disturb")
+        await ctx.respond(f"<:dnd:852891721771515934> {user.mention} is on do not disturb.")
       else:
-        await ctx.respond(f"<:offline:844536738512896020> {user.mention} is offline")
+        await ctx.respond(f"<:offline:844536738512896020> {user.mention} is offline.")
 
 @bot.slash_command(description="Clears every mention of your guild from the database")
 @diskord.application.option('user', description='The bot to remove from the database')

@@ -7,8 +7,6 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 load_dotenv()
 
-# still to do before public release
-
 # view guild config
 
 cluster = MongoClient(os.environ.get("mongo"))
@@ -22,7 +20,7 @@ intents.members = True
 bot = commands.Bot(
 	command_prefix="s!",  # Change to desired prefix
 	case_insensitive=True,# Commands aren't case-sensitive
-  intents=intents,  #enables intents
+  intents=intents,      #enables intents
 )
 
 bot.author_id = 705798778472366131  # Change to your discord id!!!
@@ -60,24 +58,24 @@ async def stats(ctx):
   await ctx.respond(embed=embed)
 
 @bot.slash_command(description="Check the status of a bot")
-@diskord.application.option('user', description='The user to check the status of')
+@diskord.application.option("user", description="The user to check the status of")
 async def status(ctx,user:diskord.User):
   if not user.bot:
     await ctx.respond("For privacy reasons, you can only check the status of a bot.")
     return
   for i in ctx.guild.members:
     if i.id == user.id:
-      if str(i.status) == 'online':
-          await ctx.respond(f"<:online:844536822972284948>  {user.mention} is online")
-      elif str(i.status) == 'idle':
+      if str(i.status) == "online":
+          await ctx.respond(f"<:online:844536822972284948> {user.mention} is online")
+      elif str(i.status) == "idle":
         await ctx.respond(f"<:idle:852891603264602172> {user.mention} is on idle")
-      elif str(i.status) == 'dnd':
+      elif str(i.status) == "dnd":
         await ctx.respond(f"<:dnd:852891721771515934> {user.mention} is on do not disturb")
       else:
         await ctx.respond(f"<:offline:844536738512896020> {user.mention} is offline")
 
 @bot.slash_command(description="Clears every mention of your guild from the database")
-@diskord.application.option('user', description='The bot to remove from the database')
+@diskord.application.option("user", description="The bot to remove from the database")
 @commands.has_permissions(manage_channels=True)
 async def remove(ctx, user:diskord.User = None):
   if not user.bot:
@@ -85,26 +83,26 @@ async def remove(ctx, user:diskord.User = None):
     return
   
   if user == None:
-    collection.update_many( { }, { '$unset': { str(ctx.guild.id): '' } } )
+    collection.update_many( { }, { "$unset": { str(ctx.guild.id): "" } } )
     await ctx.respond(f"Removed all mentions of {ctx.guild.name} from the database")
   else:
-    collection.update_one({"_id": user.id}, {"$unset" : {f"{ctx.guild.id}":""}})
+    collection.update_one({"_id": user.id}, {"$unset" : {f"{ctx.guild.id}": ""}})
     await ctx.respond(f"Removed {user.mention} from the database")
 
 
 @bot.event
 async def on_guild_remove(guild):
-    collection.update_many( { }, { '$unset': { str(guild.id): '' } } )
+    collection.update_many( { }, { "$unset": { str(guild.id): "" } } )
 
 @bot.slash_command(description="Check the latency of a bot")
 async def ping(ctx):
-  await ctx.respond(f':ping_pong: Pong!\n **Bot**: {round(bot.latency * 1000)} ms')  
+  await ctx.respond(f":ping_pong: Pong!\n **Bot**: {round(bot.latency * 1000)} ms")  
 
 @bot.slash_command(description="Adds a bot to watch for status changes")
-@diskord.application.option('channel', description='The Channel to send down messages to')
-@diskord.application.option('user', description='The user to watch the status of')
-@diskord.application.option('down_message', description='The down message to send to the channel')
-@diskord.application.option('auto_publish', description='Whether the bot should publish the down message')
+@diskord.application.option("channel", description="The Channel to send down messages to")
+@diskord.application.option("user", description="The user to watch the status of")
+@diskord.application.option("down_message", description="The down message to send to the channel")
+@diskord.application.option("auto_publish", description="Whether the bot should publish the down message")
 @commands.has_permissions(manage_channels=True)
 async def add(ctx, channel: diskord.abc.GuildChannel, user: diskord.User, down_message: str, auto_publish: bool = False):
 
@@ -199,11 +197,11 @@ async def on_presence_update(before,after):
             msg = await channel.fetch_message(server[1])
             down_message = server[2]
             auto_publish = server[3]      
-            if str(after.status) == 'online':
-                await msg.edit(content=f"<:online:844536822972284948>  {user.mention} is online")
-            elif str(after.status) == 'idle':
+            if str(after.status) == "online":
+                await msg.edit(content=f"<:online:844536822972284948> {user.mention} is online")
+            elif str(after.status) == "idle":
               await msg.edit(content=f"<:idle:852891603264602172> {user.mention} is on idle")
-            elif str(after.status) == 'dnd':
+            elif str(after.status) == "dnd":
               await msg.edit(content=f"<:dnd:852891721771515934> {user.mention} is on do not disturb")
             else:
               await msg.edit(content=f"<:offline:844536738512896020> {user.mention} is offline")
@@ -220,10 +218,7 @@ async def on_presence_update(before,after):
     pass
   await asyncio.sleep(10)
   updated.remove(before.id)
-  
 
-
-
-keep_alive()  # Starts a webserver to be pinged.
+keep_alive()  # Starts a webserver to be pinged
 token = os.environ.get("DISCORD_BOT_SECRET") 
 bot.run(token)  # Starts the bot

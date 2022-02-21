@@ -78,19 +78,20 @@ async def status(ctx,user:diskord.User):
 @diskord.application.option("user", description="The bot to remove from the database")
 @commands.has_permissions(manage_channels=True)
 async def remove(ctx, user:diskord.User = None):
-  if not user.bot:
-    await ctx.respond("You can only remove a bot from the database")
-    return
-  
+  if user != None:
+    if not user.bot:
+      await ctx.respond("You can only remove a bot from the database")
+      return
   try:
-    if user == None:
-      collection.update_many( { }, { "$unset": { str(ctx.guild.id): "" } } )
-      await ctx.respond(f"Removed all mentions of {ctx.guild.name} from the database")
-    else:
-      collection.update_one({"_id": user.id}, {"$unset" : {f"{ctx.guild.id}": ""}})
-      await ctx.respond(f"Removed {user.mention} from the database")
+	if user == None:
+	collection.update_many( { }, { "$unset": { str(ctx.guild.id): "" } } )
+	await ctx.respond(f"Removed all mentions of {ctx.guild.name} from the database")
+	else:
+	collection.update_one({"_id": user.id}, {"$unset" : {f"{ctx.guild.id}": ""}})
+	await ctx.respond(f"Removed {user.mention} from the database")
   except Exception as e:
-    await ctx.respond(e)
+	await ctx.respond(e)
+
 
 
 @bot.event

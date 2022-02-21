@@ -82,12 +82,15 @@ async def remove(ctx, user:diskord.User = None):
     await ctx.respond("You can only remove a bot from the database")
     return
   
-  if user == None:
-    collection.update_many( { }, { "$unset": { str(ctx.guild.id): "" } } )
-    await ctx.respond(f"Removed all mentions of {ctx.guild.name} from the database")
-  else:
-    collection.update_one({"_id": user.id}, {"$unset" : {f"{ctx.guild.id}": ""}})
-    await ctx.respond(f"Removed {user.mention} from the database")
+  try:
+    if user == None:
+      collection.update_many( { }, { "$unset": { str(ctx.guild.id): "" } } )
+      await ctx.respond(f"Removed all mentions of {ctx.guild.name} from the database")
+    else:
+      collection.update_one({"_id": user.id}, {"$unset" : {f"{ctx.guild.id}": ""}})
+      await ctx.respond(f"Removed {user.mention} from the database")
+  except Exception as e:
+    await ctx.respond(e)
 
 
 @bot.event
@@ -178,6 +181,13 @@ async def on_presence_update(before,after):
     return
     
   updated.append(before.id)
+
+  asyncio.sleep(10)
+
+  double_check = bot.get_user(before.id)
+
+  if before.status != double_check.status:
+    return
       
   user = bot.get_user(before.id)
   try:

@@ -20,7 +20,7 @@ intents.members = True
 bot = commands.Bot(
 	command_prefix="s!",  # Change to desired prefix
 	case_insensitive=True,# Commands aren't case-sensitive
-  intents=intents,      #enables intents
+  	intents=intents,      #enables intents
 )
 
 bot.author_id = 705798778472366131  # Change to your discord id!!!
@@ -51,7 +51,7 @@ async def stats(ctx):
 
   
   embed=diskord.Embed(title="Bot Stats")
-  embed.set_author(name="Made by SamBot#7421", url="https://github.com/wotanut", icon_url="https://images-ext-1.discordapp.net/external/_AQsXtlNs4EPEJ372GCGJuu9pp4Ws5wWJ_Ob_smuxmQ/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/705798778472366131/0f60b85c80cda940209cfd035109d7ef.png")
+  embed.set_author(name="Made by SamBot#7421", url="https://github.com/wotanut")
   embed.add_field(name="Guilds", value=f"```{len(bot.guilds)}```", inline=True) 
   embed.add_field(name="Users", value=f"```{members}```", inline=True)
   embed.set_footer(text="Thank you for supporting status checker")
@@ -82,15 +82,15 @@ async def remove(ctx, user:diskord.User = None):
     if not user.bot:
       await ctx.respond("You can only remove a bot from the database")
       return
-  try:
-	if user == None:
-	collection.update_many( { }, { "$unset": { str(ctx.guild.id): "" } } )
-	await ctx.respond(f"Removed all mentions of {ctx.guild.name} from the database")
-	else:
-	collection.update_one({"_id": user.id}, {"$unset" : {f"{ctx.guild.id}": ""}})
-	await ctx.respond(f"Removed {user.mention} from the database")
-  except Exception as e:
-	await ctx.respond(e)
+    try:
+    	if user == None:
+    	  collection.update_many( { }, { "$unset": { str(ctx.guild.id): "" } } )
+    	  await ctx.respond(f"Removed all mentions of {ctx.guild.name} from the database")
+    	else:
+    	  collection.update_one({"_id": user.id}, {"$unset" : {f"{ctx.guild.id}": ""}})
+    	  await ctx.respond(f"Removed {user.mention} from the database")
+    except Exception as e:
+  	  await ctx.respond(e)
 
 
 
@@ -102,13 +102,26 @@ async def on_guild_remove(guild):
 async def ping(ctx):
   await ctx.respond(f":ping_pong: Pong!\n **Bot**: {round(bot.latency * 1000)} ms")  
 
+@bot.slash_command(description="Get a link to invite the bot")
+async def invite(ctx):
+  await ctx.respond("https://dsc.gg/status-checker")
+
+@bot.slash_command(description="View the bots privacy policy")
+async def privacy(ctx):
+  await ctx.respond("https://bit.ly/SC-Privacy-Policy")
+
+@bot.slash_command(description="View the bots Terms Of Service")
+async def terms(ctx):
+  await ctx.respond("https://bit.ly/SC-TOS")
+
 @bot.slash_command(description="Adds a bot to watch for status changes")
 @diskord.application.option("channel", description="The Channel to send down messages to")
 @diskord.application.option("user", description="The user to watch the status of")
 @diskord.application.option("down_message", description="The down message to send to the channel")
 @diskord.application.option("auto_publish", description="Whether the bot should publish the down message")
+@diskord.application.option("dm", description="Whether the bot should Direct Message you")
 @commands.has_permissions(manage_channels=True)
-async def add(ctx, channel: diskord.abc.GuildChannel, user: diskord.User, down_message: str, auto_publish: bool = False):
+async def add(ctx, channel: diskord.abc.GuildChannel, user: diskord.User, down_message: str, auto_publish: bool = False, dm:bool = False):
 
   # get the channel and ensure that the bot has the correct access permisions 
   
@@ -156,18 +169,6 @@ async def add(ctx, channel: diskord.abc.GuildChannel, user: diskord.User, down_m
   await message.edit(content=f"Status Checker information loaded\nWatching {user.mention}")
   await ctx.respond(f"Watching {user.mention} I will alert you if their status changes")
 
-@bot.slash_command(description="Get a link to invite the bot")
-async def invite(ctx):
-  await ctx.respond("https://dsc.gg/status-checker")
-
-@bot.slash_command(description="View the bots privacy policy")
-async def privacy(ctx):
-  await ctx.respond("https://bit.ly/SC-Privacy-Policy")
-
-@bot.slash_command(description="View the bots Terms Of Service")
-async def terms(ctx):
-  await ctx.respond("https://bit.ly/SC-TOS")
-
 updated = []
   
 @bot.event
@@ -183,13 +184,16 @@ async def on_presence_update(before,after):
     
   updated.append(before.id)
 
-  asyncio.sleep(10)
-
-  double_check = bot.get_user(before.id)
-
-  if before.status != double_check.status:
-    return
-      
+  try:
+    asyncio.sleep(10)
+  
+    double_check = bot.get_user(before.id)
+  
+    if before.status != double_check.status:
+      return
+  except:
+    pass
+    
   user = bot.get_user(before.id)
   try:
     results = collection.find()
@@ -223,6 +227,12 @@ async def on_presence_update(before,after):
                   await down_msg.publish()
                 except:
                   pass
+
+            try:
+              user = bot.get_user(server[4])
+              await user.send(down_message)
+            except:
+              pass
             
   except Exception as e:
     print(e)

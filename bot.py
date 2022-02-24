@@ -185,7 +185,7 @@ async def on_presence_update(before,after):
   updated.append(before.id)
 
   try:
-    asyncio.sleep(10)
+    await asyncio.sleep(10)
   
     double_check = bot.get_user(before.id)
   

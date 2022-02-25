@@ -121,21 +121,29 @@ async def terms(ctx):
 @diskord.application.option("auto_publish", description="Whether the bot should publish the down message")
 @diskord.application.option("dm", description="Whether the bot should Direct Message you")
 @commands.has_permissions(manage_channels=True)
-async def add(ctx, channel: diskord.abc.GuildChannel, user: diskord.User, down_message: str, auto_publish: bool = False, dm:bool = False):
+async def add(ctx, user: diskord.User, down_message: str, auto_publish: bool = False, dm:bool = False, channel: diskord.abc.GuildChannel = None):
 
   # get the channel and ensure that the bot has the correct access permisions 
+  if channel == None and dm == False:
+    await ctx.respond("you have to pick either a channel or send to a dm!")
+    return
   
   try:
     channel = bot.get_channel(int(channel.id))
+    if type(channel) != diskord.channel.TextChannel:
+      await ctx.respond("That doesn't look like a text channel to me")
+      return
+    if auto_publish == True and channel.is_news() == False:
+      auto_publish = False
   except Exception as e:
-    await ctx.respond(f"Failed to get channel, this is usually becuase I do not have access or the channel does not exist. \n Error: || {e} ||")
-    return
+    if dm == False:
+      await ctx.respond(f"Failed to get channel, this is usually becuase I do not have access or the channel does not exist. \n Error: || {e} ||")
+      return
 
   if type(channel) != diskord.channel.TextChannel:
-    await ctx.respond("That doesn't look like a text channel to me")
-    return
-  if auto_publish == True and channel.is_news() == False:
-    auto_publish = False
+      await ctx.respond("That doesn't look like a text channel to me")
+      return
+  
   if user == bot.user.id:
     await ctx.respond("You cannot add me for status checks\nYou can only add other bots")
     return

@@ -3,6 +3,8 @@ from keep_alive import keep_alive
 import diskord
 from diskord.ext import commands
 import asyncio
+import requests
+import aiohttp
 from pymongo import MongoClient
 from dotenv import load_dotenv
 load_dotenv()
@@ -92,10 +94,34 @@ async def remove(ctx, user:diskord.User = None):
     except Exception as e:
   	  await ctx.respond(e)
 
+ 
+@bot.event
+async def on_guild_join(guild):
+  channel = client.get_channel(947126649378447400)
+  embed=diskord.Embed(title="I joined a guild", description=f"{guild.name}", color=0x5bfa05)
+  embed.timestamp = datetime.datetime.utcnow()
+  await channel.send(embed=embed)
+
+  async with aiohttp.ClientSession() as session:
+    top = 'https://top.gg/api/bots/845943691386290198/stats'
+    dsl = 'https://api.discordlist.space/v2/bots/845943691386290198'
+    async with session.post(top,headers={"Authorization": os.getenv("top")},json={"server_count": int(len(bot.guilds))}) as resp:
+        response = await resp.json()
+        pass
+    async with session.post(dsl,headers={"Authorization": os.getenv("dsl")},json={"serverCount": int(len(bot.guilds))}) as resp:
+        response = await resp.json()
+        pass
+    
+
+
 
 
 @bot.event
 async def on_guild_remove(guild):
+    channel = client.get_channel(947126649378447400)
+    embed=diskord.Embed(title="I Left a guild", description=f"{guild.name}", color=0xfa0505)
+    embed.timestamp = datetime.datetime.utcnow()
+    await channel.send(embed=embed)
     collection.update_many( { }, { "$unset": { str(guild.id): "" } } )
 
 @bot.slash_command(description="Check the latency of a bot")
@@ -247,6 +273,8 @@ async def on_presence_update(before,after):
     pass
   await asyncio.sleep(10)
   updated.remove(before.id)
+
+
 
 keep_alive()  # Starts a webserver to be pinged
 token = os.environ.get("DISCORD_BOT_SECRET") 

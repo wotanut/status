@@ -141,22 +141,14 @@ async def terms(ctx):
   await ctx.respond("https://bit.ly/SC-TOS")
 
 @bot.slash_command(description="Adds a bot to watch for status changes")
-@diskord.application.option("channel", description="The Channel to send down messages to")
 @diskord.application.option("user", description="The user to watch the status of")
+@diskord.application.option("channel", description="The Channel to send down messages to")
 @diskord.application.option("down_message", description="The down message to send to the channel")
 @diskord.application.option("auto_publish", description="Whether the bot should publish the down message")
 @diskord.application.option("dm", description="Whether the bot should Direct Message you")
 @commands.has_permissions(manage_channels=True)
-async def add(ctx, user: diskord.User, down_message: str, auto_publish: bool = False, dm:bool = False, channel: diskord.abc.GuildChannel = None):
-
-  # get the channel and ensure that the bot has the correct access permisions 
-  if channel == None and dm == False:
-    await ctx.respond("you have to pick either a channel or send to a dm!")
-    return
+async def add(ctx, user: diskord.User,channel: diskord.abc.GuildChannel, down_message: str, auto_publish: bool = False, dm:bool = False):
   
-  
-  if channel == None:
-    channel = 0
   if dm == False:
     owner = 0
   elif dm == True:
@@ -170,9 +162,8 @@ async def add(ctx, user: diskord.User, down_message: str, auto_publish: bool = F
     if auto_publish == True and channel.is_news() == False:
       auto_publish = False
   except Exception as e:
-    if dm == False:
-      await ctx.respond(f"Failed to get channel, this is usually becuase I do not have access or the channel does not exist. \n Error: || {e} ||")
-      return
+    await ctx.respond(f"Failed to get channel, this is usually becuase I do not have access or the channel does not exist. \n Error: || {e} ||")
+    return
   
   if user == bot.user.id:
     await ctx.respond("You cannot add me for status checks\nYou can only add other bots")
@@ -249,7 +240,8 @@ async def on_presence_update(before,after):
             channel = bot.get_channel(server[0])
             msg = await channel.fetch_message(server[1])
             down_message = server[2]
-            auto_publish = server[3]      
+            auto_publish = server[3]
+
             if str(after.status) == "online":
                 await msg.edit(content=f"<:online:844536822972284948> {user.mention} is online")
             elif str(after.status) == "idle":
@@ -258,7 +250,7 @@ async def on_presence_update(before,after):
               await msg.edit(content=f"<:dnd:852891721771515934> {user.mention} is on do not disturb")
             else:
               await msg.edit(content=f"<:offline:844536738512896020> {user.mention} is offline")
-              
+
               down_msg = await channel.send(down_message)
               if auto_publish == True:
                 try:

@@ -113,9 +113,6 @@ async def on_guild_join(guild):
         pass
     
 
-
-
-
 @bot.event
 async def on_guild_remove(guild):
     channel = client.get_channel(947126649378447400)
@@ -123,6 +120,27 @@ async def on_guild_remove(guild):
     embed.timestamp = datetime.datetime.utcnow()
     await channel.send(embed=embed)
     collection.update_many( { }, { "$unset": { str(guild.id): "" } } )
+
+@bot.event
+async def on_command_error(self, ctx, error):
+  if isinstance(error, commands.CommandNotFound):
+      return
+
+  if isinstance(error, commands.BotMissingPermissions):
+      await ctx.respond("I am missing required permissions to run this command")
+      return
+
+  if isinstance(error, commands.MissingPermissions):
+      await ctx.respond("You are missing required permissions to run this command")
+      return
+
+  await ctx.respond("A fatal error occured, please join the support server for more information")
+
+  channel = bot.get_channel(947126385254740028)
+
+  embed = discord.Embed(title="Error", description="An error was produced", color= int("0x36393f", 16)) # Initializing an Embed
+  embed.add_field(name=f"{ctx.author}", value=f"{error}")
+  await channel.send(embed=embed)
 
 @bot.slash_command(description="Check the latency of a bot")
 async def ping(ctx):

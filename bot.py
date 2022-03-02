@@ -154,6 +154,14 @@ async def add(ctx, user: diskord.User, down_message: str, auto_publish: bool = F
     await ctx.respond("you have to pick either a channel or send to a dm!")
     return
   
+  
+  if channel == None:
+    channel = 0
+  if dm == False:
+    owner = 0
+  elif dm == True:
+    owner = ctx.author.id
+  
   try:
     channel = bot.get_channel(int(channel.id))
     if type(channel) != diskord.channel.TextChannel:
@@ -164,10 +172,6 @@ async def add(ctx, user: diskord.User, down_message: str, auto_publish: bool = F
   except Exception as e:
     if dm == False:
       await ctx.respond(f"Failed to get channel, this is usually becuase I do not have access or the channel does not exist. \n Error: || {e} ||")
-      return
-
-  if type(channel) != diskord.channel.TextChannel:
-      await ctx.respond("That doesn't look like a text channel to me")
       return
   
   if user == bot.user.id:
@@ -196,9 +200,9 @@ async def add(ctx, user: diskord.User, down_message: str, auto_publish: bool = F
     return
 
   try:
-    collection.insert_one({"_id": user.id, f"{ctx.guild.id}": [channel.id,message.id,down_message,auto_publish]})
+    collection.insert_one({"_id": user.id, f"{ctx.guild.id}": [channel.id,message.id,down_message,auto_publish,owner]})
   except:
-    collection.update_one({"_id": user.id}, {"$set" : {f"{ctx.guild.id}": [channel.id,message.id,down_message,auto_publish]}})
+    collection.update_one({"_id": user.id}, {"$set" : {f"{ctx.guild.id}": [channel.id,message.id,down_message,auto_publish,owner]}})
 
   await message.edit(content=f"Status Checker information loaded\nWatching {user.mention}")
   await ctx.respond(f"Watching {user.mention} I will alert you if their status changes")

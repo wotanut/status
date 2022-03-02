@@ -113,9 +113,6 @@ async def on_guild_join(guild):
         pass
     
 
-
-
-
 @bot.event
 async def on_guild_remove(guild):
     channel = client.get_channel(947126649378447400)
@@ -123,6 +120,27 @@ async def on_guild_remove(guild):
     embed.timestamp = datetime.datetime.utcnow()
     await channel.send(embed=embed)
     collection.update_many( { }, { "$unset": { str(guild.id): "" } } )
+
+@bot.event
+async def on_command_error(self, ctx, error):
+  if isinstance(error, commands.CommandNotFound):
+      return
+
+  if isinstance(error, commands.BotMissingPermissions):
+      await ctx.respond("I am missing required permissions to run this command")
+      return
+
+  if isinstance(error, commands.MissingPermissions):
+      await ctx.respond("You are missing required permissions to run this command")
+      return
+
+  await ctx.respond("A fatal error occured, please join the support server for more information")
+
+  channel = bot.get_channel(947126385254740028)
+
+  embed = discord.Embed(title="Error", description="An error was produced", color= int("0x36393f", 16)) # Initializing an Embed
+  embed.add_field(name=f"{ctx.author}", value=f"{error}")
+  await channel.send(embed=embed)
 
 @bot.slash_command(description="Check the latency of a bot")
 async def ping(ctx):
@@ -141,22 +159,14 @@ async def terms(ctx):
   await ctx.respond("https://bit.ly/SC-TOS")
 
 @bot.slash_command(description="Adds a bot to watch for status changes")
-@diskord.application.option("channel", description="The Channel to send down messages to")
 @diskord.application.option("user", description="The user to watch the status of")
+@diskord.application.option("channel", description="The Channel to send down messages to")
 @diskord.application.option("down_message", description="The down message to send to the channel")
 @diskord.application.option("auto_publish", description="Whether the bot should publish the down message")
 @diskord.application.option("dm", description="Whether the bot should Direct Message you")
 @commands.has_permissions(manage_channels=True)
-async def add(ctx, user: diskord.User, down_message: str, auto_publish: bool = False, dm:bool = False, channel: diskord.abc.GuildChannel = None):
-
-  # get the channel and ensure that the bot has the correct access permisions 
-  if channel == None and dm == False:
-    await ctx.respond("you have to pick either a channel or send to a dm!")
-    return
+async def add(ctx, user: diskord.User,channel: diskord.abc.GuildChannel, down_message: str, auto_publish: bool = False, dm:bool = False):
   
-  
-  if channel == None:
-    channel = 0
   if dm == False:
     owner = 0
   elif dm == True:
@@ -170,9 +180,8 @@ async def add(ctx, user: diskord.User, down_message: str, auto_publish: bool = F
     if auto_publish == True and channel.is_news() == False:
       auto_publish = False
   except Exception as e:
-    if dm == False:
-      await ctx.respond(f"Failed to get channel, this is usually becuase I do not have access or the channel does not exist. \n Error: || {e} ||")
-      return
+    await ctx.respond(f"Failed to get channel, this is usually becuase I do not have access or the channel does not exist. \n Error: || {e} ||")
+    return
   
   if user == bot.user.id:
     await ctx.respond("You cannot add me for status checks\nYou can only add other bots")
@@ -249,7 +258,8 @@ async def on_presence_update(before,after):
             channel = bot.get_channel(server[0])
             msg = await channel.fetch_message(server[1])
             down_message = server[2]
-            auto_publish = server[3]      
+            auto_publish = server[3]
+
             if str(after.status) == "online":
                 await msg.edit(content=f"<:online:844536822972284948> {user.mention} is online")
             elif str(after.status) == "idle":
@@ -258,7 +268,7 @@ async def on_presence_update(before,after):
               await msg.edit(content=f"<:dnd:852891721771515934> {user.mention} is on do not disturb")
             else:
               await msg.edit(content=f"<:offline:844536738512896020> {user.mention} is offline")
-              
+
               down_msg = await channel.send(down_message)
               if auto_publish == True:
                 try:

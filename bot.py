@@ -158,6 +158,10 @@ async def privacy(ctx):
 async def terms(ctx):
   await ctx.respond("https://bit.ly/SC-TOS")
 
+@bot.slash_command(description="Get some useful debugging information about the bot")
+async def debug(ctx):
+  await ctx.respond("Version 1.0.1, Rick")
+
 @bot.slash_command(description="Adds a bot to watch for status changes")
 @diskord.application.option("user", description="The user to watch the status of")
 @diskord.application.option("channel", description="The Channel to send down messages to")

@@ -4,6 +4,8 @@ import diskord
 from diskord.ext import commands
 import asyncio
 import requests
+import datetime
+from datetime import time
 import aiohttp
 from pymongo import MongoClient
 from dotenv import load_dotenv
@@ -32,6 +34,7 @@ async def on_ready():  # When the bot is ready
     print("I'm in")
     await bot.change_presence(activity=diskord.Activity(type=diskord.ActivityType.watching, name="over your bots!"))
     print(bot.user)  # Prints the bot's username and identifier
+    startTime = time.time()
 
 @bot.slash_command(description="Get some help about the bot")
 async def help(ctx):
@@ -68,13 +71,13 @@ async def status(ctx,user:diskord.User):
   for i in ctx.guild.members:
     if i.id == user.id:
       if str(i.status) == "online":
-          await ctx.respond(f"<:online:844536822972284948> {user.mention} is online")
+          await ctx.respond(f"<:online:949589635061915648> {user.mention} is online")
       elif str(i.status) == "idle":
-        await ctx.respond(f"<:idle:852891603264602172> {user.mention} is on idle")
+        await ctx.respond(f"<:idle:949589635087081503> {user.mention} is on idle")
       elif str(i.status) == "dnd":
-        await ctx.respond(f"<:dnd:852891721771515934> {user.mention} is on do not disturb")
+        await ctx.respond(f"<:dnd:949589635091284019> {user.mention} is on do not disturb")
       else:
-        await ctx.respond(f"<:offline:844536738512896020> {user.mention} is offline.")
+        await ctx.respond(f"<:offline:949589634898350101> {user.mention} is offline.")
 
 @bot.slash_command(description="Clears every mention of your guild from the database")
 @diskord.application.option("user", description="The bot to remove from the database")
@@ -160,7 +163,11 @@ async def terms(ctx):
 
 @bot.slash_command(description="Get some useful debugging information about the bot")
 async def debug(ctx):
-  await ctx.respond("Version 1.0.1, Rick")
+  embed=diskord.Embed(title="Debug Information",color=0x08bbe7)
+  embed.add_field(name="Version", value="1.0.1", inline=True)
+  embed.add_field(name="Version Name", value="Rick", inline=True)
+  embed.add_field(name="Uptime", value=str(datetime.timedelta(seconds=int(round(time.time()-startTime)))), inline=True)
+  await ctx.respond(embed=embed)
 
 @bot.slash_command(description="Adds a bot to watch for status changes")
 @diskord.application.option("user", description="The user to watch the status of")
@@ -168,8 +175,9 @@ async def debug(ctx):
 @diskord.application.option("down_message", description="The down message to send to the channel")
 @diskord.application.option("auto_publish", description="Whether the bot should publish the down message")
 @diskord.application.option("dm", description="Whether the bot should Direct Message you")
+@diskord.application.option("lock", description="Whether the bot should Lock the server if the bot goes down")
 @commands.has_permissions(manage_channels=True)
-async def add(ctx, user: diskord.User,channel: diskord.abc.GuildChannel, down_message: str, auto_publish: bool = False, dm:bool = False):
+async def add(ctx, user: diskord.User,channel: diskord.abc.GuildChannel, down_message: str, auto_publish: bool = False, dm:bool = False, lock:bool = False):
   
   if dm == False:
     owner = 0
@@ -204,18 +212,22 @@ async def add(ctx, user: diskord.User,channel: diskord.abc.GuildChannel, down_me
   if not permissionsInChannel.manage_messages: # Needed to be able to publish messages in an announcements channel
     await ctx.respond("I cannot manage messages in that channel")
     return
+
+  if ctx.guild.me.server_permissions.manage_channels == False and lock == False:
+    await ctx.respond("In order to lock the server I need to have manage channels permissions")
+    return
   
   # If bot has all needed permissions, send a message in that channel (and catch the error if it fails somehow)
   try:
-    message = await channel.send("<a:loading:844891826934251551> Loading Status Checker information")
+    message = await channel.send("<a:loading:949590942925611058> Loading Status Checker information")
   except:
     await ctx.respond("I do not have permissions to send messages in that channel")
     return
 
   try:
-    collection.insert_one({"_id": user.id, f"{ctx.guild.id}": [channel.id,message.id,down_message,auto_publish,owner]})
+    collection.insert_one({"_id": user.id, f"{ctx.guild.id}": [channel.id,message.id,down_message,auto_publish,owner,lock]})
   except:
-    collection.update_one({"_id": user.id}, {"$set" : {f"{ctx.guild.id}": [channel.id,message.id,down_message,auto_publish,owner]}})
+    collection.update_one({"_id": user.id}, {"$set" : {f"{ctx.guild.id}": [channel.id,message.id,down_message,auto_publish,owner,lock]}})
 
   await message.edit(content=f"Status Checker information loaded\nWatching {user.mention}")
   await ctx.respond(f"Watching {user.mention} I will alert you if their status changes")
@@ -263,15 +275,34 @@ async def on_presence_update(before,after):
             msg = await channel.fetch_message(server[1])
             down_message = server[2]
             auto_publish = server[3]
+            owner = int(server[4])
+            lock = server[5]
 
             if str(after.status) == "online":
-                await msg.edit(content=f"<:online:844536822972284948> {user.mention} is online")
+                await msg.edit(content=f"<:online:949589635061915648> {user.mention} is online")
+                if lock == True:
+                  perms = ctx.channel.overwrites_for(ctx.guild.default_role)
+                  perms.send_messages=True
+                  await ctx.channel.set_permissions(ctx.guild.default_role, overwrite=perms)
+
             elif str(after.status) == "idle":
-              await msg.edit(content=f"<:idle:852891603264602172> {user.mention} is on idle")
+              await msg.edit(content=f"<:idle:949589635087081503> {user.mention} is on idle")
+              if lock == True:
+                  perms = ctx.channel.overwrites_for(ctx.guild.default_role)
+                  perms.send_messages=True
+                  await ctx.channel.set_permissions(ctx.guild.default_role, overwrite=perms)
             elif str(after.status) == "dnd":
-              await msg.edit(content=f"<:dnd:852891721771515934> {user.mention} is on do not disturb")
+              await msg.edit(content=f"<:dnd:949589635091284019> {user.mention} is on do not disturb")
+              if lock == True:
+                  perms = ctx.channel.overwrites_for(ctx.guild.default_role)
+                  perms.send_messages=True
+                  await ctx.channel.set_permissions(ctx.guild.default_role, overwrite=perms)
             else:
-              await msg.edit(content=f"<:offline:844536738512896020> {user.mention} is offline")
+              await msg.edit(content=f"<:offline:949589634898350101> {user.mention} is offline")
+              if lock == True:
+                  perms = ctx.channel.overwrites_for(ctx.guild.default_role)
+                  perms.send_messages=False
+                  await ctx.channel.set_permissions(ctx.guild.default_role, overwrite=perms)
 
               down_msg = await channel.send(down_message)
               if auto_publish == True:
@@ -281,7 +312,7 @@ async def on_presence_update(before,after):
                   pass
 
             try:
-              user = bot.get_user(server[4])
+              user = bot.get_user(owner)
               await user.send(down_message)
             except:
               pass

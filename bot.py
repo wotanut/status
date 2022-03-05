@@ -175,8 +175,9 @@ async def debug(ctx):
 @diskord.application.option("down_message", description="The down message to send to the channel")
 @diskord.application.option("auto_publish", description="Whether the bot should publish the down message")
 @diskord.application.option("dm", description="Whether the bot should Direct Message you")
+@diskord.application.option("lock", description="Whether the bot should Lock the server if the bot goes down")
 @commands.has_permissions(manage_channels=True)
-async def add(ctx, user: diskord.User,channel: diskord.abc.GuildChannel, down_message: str, auto_publish: bool = False, dm:bool = False):
+async def add(ctx, user: diskord.User,channel: diskord.abc.GuildChannel, down_message: str, auto_publish: bool = False, dm:bool = False, lock:bool = False):
   
   if dm == False:
     owner = 0
@@ -211,6 +212,10 @@ async def add(ctx, user: diskord.User,channel: diskord.abc.GuildChannel, down_me
   if not permissionsInChannel.manage_messages: # Needed to be able to publish messages in an announcements channel
     await ctx.respond("I cannot manage messages in that channel")
     return
+
+  if ctx.guild.me.server_permissions.manage_channels == False and lock == False:
+    await ctx.respond("In order to lock the server I need to have manage channels permissions")
+    return
   
   # If bot has all needed permissions, send a message in that channel (and catch the error if it fails somehow)
   try:
@@ -220,9 +225,9 @@ async def add(ctx, user: diskord.User,channel: diskord.abc.GuildChannel, down_me
     return
 
   try:
-    collection.insert_one({"_id": user.id, f"{ctx.guild.id}": [channel.id,message.id,down_message,auto_publish,owner]})
+    collection.insert_one({"_id": user.id, f"{ctx.guild.id}": [channel.id,message.id,down_message,auto_publish,owner,lock]})
   except:
-    collection.update_one({"_id": user.id}, {"$set" : {f"{ctx.guild.id}": [channel.id,message.id,down_message,auto_publish,owner]}})
+    collection.update_one({"_id": user.id}, {"$set" : {f"{ctx.guild.id}": [channel.id,message.id,down_message,auto_publish,owner,lock]}})
 
   await message.edit(content=f"Status Checker information loaded\nWatching {user.mention}")
   await ctx.respond(f"Watching {user.mention} I will alert you if their status changes")
@@ -270,15 +275,34 @@ async def on_presence_update(before,after):
             msg = await channel.fetch_message(server[1])
             down_message = server[2]
             auto_publish = server[3]
+            owner = int(server[4])
+            lock = server[5]
 
             if str(after.status) == "online":
                 await msg.edit(content=f"<:online:949589635061915648> {user.mention} is online")
+                if lock == True:
+                  perms = ctx.channel.overwrites_for(ctx.guild.default_role)
+                  perms.send_messages=True
+                  await ctx.channel.set_permissions(ctx.guild.default_role, overwrite=perms)
+
             elif str(after.status) == "idle":
               await msg.edit(content=f"<:idle:949589635087081503> {user.mention} is on idle")
+              if lock == True:
+                  perms = ctx.channel.overwrites_for(ctx.guild.default_role)
+                  perms.send_messages=True
+                  await ctx.channel.set_permissions(ctx.guild.default_role, overwrite=perms)
             elif str(after.status) == "dnd":
               await msg.edit(content=f"<:dnd:949589635091284019> {user.mention} is on do not disturb")
+              if lock == True:
+                  perms = ctx.channel.overwrites_for(ctx.guild.default_role)
+                  perms.send_messages=True
+                  await ctx.channel.set_permissions(ctx.guild.default_role, overwrite=perms)
             else:
               await msg.edit(content=f"<:offline:949589634898350101> {user.mention} is offline")
+              if lock == True:
+                  perms = ctx.channel.overwrites_for(ctx.guild.default_role)
+                  perms.send_messages=False
+                  await ctx.channel.set_permissions(ctx.guild.default_role, overwrite=perms)
 
               down_msg = await channel.send(down_message)
               if auto_publish == True:
@@ -288,7 +312,7 @@ async def on_presence_update(before,after):
                   pass
 
             try:
-              user = bot.get_user(server[4])
+              user = bot.get_user(owner)
               await user.send(down_message)
             except:
               pass

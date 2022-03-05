@@ -4,6 +4,8 @@ import diskord
 from diskord.ext import commands
 import asyncio
 import requests
+import datetime
+from datetime import time
 import aiohttp
 from pymongo import MongoClient
 from dotenv import load_dotenv
@@ -32,6 +34,7 @@ async def on_ready():  # When the bot is ready
     print("I'm in")
     await bot.change_presence(activity=diskord.Activity(type=diskord.ActivityType.watching, name="over your bots!"))
     print(bot.user)  # Prints the bot's username and identifier
+    startTime = time.time()
 
 @bot.slash_command(description="Get some help about the bot")
 async def help(ctx):
@@ -160,7 +163,11 @@ async def terms(ctx):
 
 @bot.slash_command(description="Get some useful debugging information about the bot")
 async def debug(ctx):
-  await ctx.respond("Version 1.0.1, Rick")
+  embed=diskord.Embed(title="Debug Information",color=0x08bbe7)
+  embed.add_field(name="Version", value="1.0.1", inline=True)
+  embed.add_field(name="Version Name", value="Rick", inline=True)
+  embed.add_field(name="Uptime", value=str(datetime.timedelta(seconds=int(round(time.time()-startTime)))), inline=True)
+  await ctx.respond(embed=embed)
 
 @bot.slash_command(description="Adds a bot to watch for status changes")
 @diskord.application.option("user", description="The user to watch the status of")

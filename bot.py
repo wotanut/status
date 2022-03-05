@@ -207,7 +207,7 @@ async def add(ctx, user: diskord.User,channel: diskord.abc.GuildChannel, down_me
   
   # If bot has all needed permissions, send a message in that channel (and catch the error if it fails somehow)
   try:
-    message = await channel.send("<a:loading:844891826934251551> Loading Status Checker information")
+    message = await channel.send("<a:loading:949590942925611058> Loading Status Checker information")
   except:
     await ctx.respond("I do not have permissions to send messages in that channel")
     return

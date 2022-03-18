@@ -64,21 +64,21 @@ async def stats(ctx):
 
 @commands.is_owner()
 @bot.slash_command(description="Temporary command to sanitise the database")
-async def sanitise():
+async def sanitise(ctx):
   results = collection.find()
-    for result in results:
-      conuter = 0
-      for query in result:
-        if str(query) == "_id":
-          # this is the objects ID, all objects have this
-          pass
-        else:
-          counter = counter + 1
-      if counter == 0:
-        try:
-          collection.delete_one(result)
-        except:
-          pass
+  for result in results:
+    counter = 0
+    for query in result:
+      if str(query) == "_id":
+        # this is the objects ID, all objects have this
+        pass
+      else:
+        counter = counter + 1
+    if counter == 0:
+      try:
+        collection.delete_one(result)
+      except:
+        pass
   await ctx.respond("Database Sanistised")
   
 

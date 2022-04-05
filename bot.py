@@ -40,12 +40,12 @@ async def on_ready():  # When the bot is ready
 async def help(ctx):
   embed=diskord.Embed(title="FAQ", url="https://github.com/wotanut", color=0x258d58)
   embed.set_author(name="Made by Sambot#7421", url="https://github.com/wotanut")
-  embed.add_field(name="What is this bot?", value="Status checker is a bot that was made to instantly inform you and your users of when your bot goes offline.", inline=False)
-  embed.add_field(name="Why did you make this bot?", value="In the early horus of March 12th 2021 OVH burned down. Mine and many other discord bots were down for hours. I decided to try and find a bot that could do what Status Checker did but found none.", inline=False)
-  embed.add_field(name="Can I track my members with this?", value="No, this bot tracks **other bots only**", inline=False)
-  embed.add_field(name="Can I self host this bot?", value="Yes but I don't recommend it. If you want to find the source code please have a dig around my GitHub profile. I will not link directly to it to discourage you from trying to self host it.", inline=False)
-  embed.add_field(name="I have a bug to report", value="Please do so in our [support server ](https://discord.gg/uNKfBdQHUx)", inline=True)
-  embed.add_field(name="How do I get started?", value="/add", inline=True)
+  embed.add_field(name="What is this bot?", value="Status Checker is a bot that was made to instantly inform you and your users of when your bot goes offline.", inline=False)
+  embed.add_field(name="Why did you make this bot?", value="In the early hours of March 12th, 2021, OVH burned down. Mine and many other Discord bots were down for hours and I decided to find a bot that could do what Status Checker does but didn't find any.", inline=False)
+  embed.add_field(name="Can I track my members with this?", value="No, this bot tracks **only bots**.", inline=False)
+  embed.add_field(name="Can I self host this bot?", value="Yes. but I don't recommend it. If you want to find the source code please have a dig around my GitHub profile. I will not link directly to it to discourage you from trying to self host it.", inline=False)
+  embed.add_field(name="I have a bug to report", value="Please do so in our [support server](https://discord.gg/uNKfBdQHUx).", inline=True)
+  embed.add_field(name="How do I get started?", value="`/add`", inline=True)
   await ctx.respond(embed=embed)
 
 @bot.slash_command(description="Give some information about the bot")

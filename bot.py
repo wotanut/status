@@ -55,11 +55,11 @@ async def stats(ctx):
     members += guild.member_count - 1
 
   
-  embed=diskord.Embed(title="Bot Stats")
+  embed=diskord.Embed(title="Status Checker Stats")
   embed.set_author(name="Made by SamBot#7421", url="https://github.com/wotanut")
   embed.add_field(name="Guilds", value=f"```{len(bot.guilds)}```", inline=True) 
   embed.add_field(name="Users", value=f"```{members}```", inline=True)
-  embed.set_footer(text="Thank you for supporting status checker")
+  embed.set_footer(text="Thank you for supporting Status Checker :)")
   await ctx.respond(embed=embed)
 
 @bot.slash_command(description="Check the status of a bot")

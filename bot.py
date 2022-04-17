@@ -44,7 +44,7 @@ async def help(ctx):
   embed.add_field(name="Why did you make this bot?", value="In the early horus of March 12th 2021 OVH burned down. Mine and many other discord bots were down for hours. I decided to try and find a bot that could do what Status Checker did but found none.", inline=False)
   embed.add_field(name="Can I track my members with this?", value="No, this bot tracks **other bots only**", inline=False)
   embed.add_field(name="Can I self host this bot?", value="Yes but I don't recommend it. If you want to find the source code please have a dig around my GitHub profile. I will not link directly to it to discourage you from trying to self host it.", inline=False)
-  embed.add_field(name="I have a bug to report", value="Please do so in our [support server ](https://discord.gg/uNKfBdQHUx)", inline=True)
+  embed.add_field(name="I have a bug to report", value="Please do so in our [support server ](https://discord.gg/2w5KSXjhGe)", inline=True)
   embed.add_field(name="How do I get started?", value="/add", inline=True)
   await ctx.respond(embed=embed)
 

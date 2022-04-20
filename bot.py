@@ -1,7 +1,8 @@
+# code imports
+
 import os
-from keep_alive import keep_alive
-import diskord
-from diskord.ext import commands
+import discord
+from discord import app_commands
 import asyncio
 import requests
 import datetime
@@ -11,34 +12,44 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 load_dotenv()
 
-# view guild config
+# database connection
 
 cluster = MongoClient(os.environ.get("mongo"))
 db = cluster["discord"]
 collection = db["status"]
 
 
-intents = diskord.Intents.all()  
+# enabling intents
+
+intents = discord.Intents.all()  
 intents.members = True  
 
-bot = commands.Bot(
-	command_prefix="s!",  # Change to desired prefix
-	case_insensitive=True,# Commands aren't case-sensitive
-  	intents=intents,      #enables intents
+# defining the bot, the application commands and the start time
+
+startTime = 0
+
+bot = discord.Client(
+  	intents=intents
 )
 
-bot.author_id = 705798778472366131  # Change to your discord id!!!
+tree = app_commands.CommandTree(bot)
+
+# fires when the bot is ready
 
 @bot.event 
 async def on_ready():  # When the bot is ready
+
+    await tree.sync()  # Syncs the command tree
+
     print("I'm in")
-    await bot.change_presence(activity=diskord.Activity(type=diskord.ActivityType.watching, name="over your bots!"))
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="over your bots!"))
     print(bot.user)  # Prints the bot's username and identifier
+
     startTime = time.time()
 
-@bot.slash_command(description="Get some help about the bot")
-async def help(ctx):
-  embed=diskord.Embed(title="FAQ", url="https://github.com/wotanut", color=0x258d58)
+@tree.command(description="Get some help about the bot")
+async def help(interaction: discord.Interaction):
+  embed=discord.Embed(title="FAQ", url="https://github.com/wotanut", color=0x258d58)
   embed.set_author(name="Made by Sambot#7421", url="https://github.com/wotanut")
   embed.add_field(name="What is this bot?", value="Status checker is a bot that was made to instantly inform you and your users of when your bot goes offline.", inline=False)
   embed.add_field(name="Why did you make this bot?", value="In the early horus of March 12th 2021 OVH burned down. Mine and many other discord bots were down for hours. I decided to try and find a bot that could do what Status Checker did but found none.", inline=False)
@@ -46,82 +57,62 @@ async def help(ctx):
   embed.add_field(name="Can I self host this bot?", value="Yes but I don't recommend it. If you want to find the source code please have a dig around my GitHub profile. I will not link directly to it to discourage you from trying to self host it.", inline=False)
   embed.add_field(name="I have a bug to report", value="Please do so in our [support server ](https://discord.gg/2w5KSXjhGe)", inline=True)
   embed.add_field(name="How do I get started?", value="/add", inline=True)
-  await ctx.respond(embed=embed)
+  await interaction.response.send_message(embed=embed)
 
-@bot.slash_command(description="Give some information about the bot")
-async def stats(ctx):
+@tree.command(description="Give some information about the bot")
+async def stats(interaction: discord.Interaction):
   members = 0
   for guild in bot.guilds:
     members += guild.member_count - 1
 
   
-  embed=diskord.Embed(title="Status Checker Stats")
+  embed=discord.Embed(title="Status Checker Stats")
   embed.set_author(name="Made by SamBot#7421", url="https://github.com/wotanut")
   embed.add_field(name="Guilds", value=f"```{len(bot.guilds)}```", inline=True) 
   embed.add_field(name="Users", value=f"```{members}```", inline=True)
   embed.set_footer(text="Thank you for supporting Status Checker :)")
-  await ctx.respond(embed=embed)
+  await interaction.response.send_message(embed=embed)
 
-@commands.is_owner()
-@bot.slash_command(description="Temporary command to sanitise the database")
-async def sanitise(ctx):
-  results = collection.find()
-  for result in results:
-    counter = 0
-    for query in result:
-      if str(query) == "_id":
-        # this is the objects ID, all objects have this
-        pass
-      else:
-        counter = counter + 1
-    if counter == 0:
-      try:
-        collection.delete_one(result)
-      except:
-        pass
-  await ctx.respond("Database Sanistised")
-  
-
-@bot.slash_command(description="Check the status of a bot")
-@diskord.application.option("user", description="The user to check the status of")
-async def status(ctx,user:diskord.User):
+@tree.command(description="Check the status of a bot")
+@app_commands.describe(user = "The user to check the status of")
+async def status(interaction: discord.Interaction,user:discord.User):
   if not user.bot:
-    await ctx.respond("For privacy reasons, you can only check the status of a bot.")
+    await interaction.response.send_message("For privacy reasons, you can only check the status of a bot.")
     return
   for i in ctx.guild.members:
     if i.id == user.id:
       if str(i.status) == "online":
-          await ctx.respond(f"<:online:949589635061915648> {user.mention} is online")
+          await interaction.response.send_message(f"<:online:949589635061915648> {user.mention} is online")
       elif str(i.status) == "idle":
-        await ctx.respond(f"<:idle:949589635087081503> {user.mention} is on idle")
+        await interaction.response.send_message(f"<:idle:949589635087081503> {user.mention} is on idle")
       elif str(i.status) == "dnd":
-        await ctx.respond(f"<:dnd:949589635091284019> {user.mention} is on do not disturb")
+        await interaction.response.send_message(f"<:dnd:949589635091284019> {user.mention} is on do not disturb")
       else:
-        await ctx.respond(f"<:offline:949589634898350101> {user.mention} is offline.")
+        await interaction.response.send_message(f"<:offline:949589634898350101> {user.mention} is offline.")
 
-@bot.slash_command(description="Clears every mention of your guild from the database")
-@diskord.application.option("user", description="The bot to remove from the database")
-@commands.has_permissions(manage_channels=True)
-async def remove(ctx, user:diskord.User = None):
+@tree.command(description="Clears every mention of your guild from the database")
+@app_commands.describe(user="The bot to remove from the database")
+@app_commands.checks.has_permissions(manage_channels=True)
+async def remove(interaction: discord.Interaction, user:discord.User = None):
   if user != None:
     if not user.bot:
-      await ctx.respond("You can only remove a bot from the database")
+      await interaction.response.send_message("You can only remove a bot from the database")
       return
     try:
     	if user == None:
-    	  collection.update_many( { }, { "$unset": { str(ctx.guild.id): "" } } )
-    	  await ctx.respond(f"Removed all mentions of {ctx.guild.name} from the database")
-    	else:
-    	  collection.update_one({"_id": user.id}, {"$unset" : {f"{ctx.guild.id}": ""}})
-    	  await ctx.respond(f"Removed {user.mention} from the database")
+            collection.update_many( { }, { "$unset": { str(ctx.guild.id): "" } } )
+            await interaction.response.send_message(f"Removed all mentions of {ctx.guild.name} from the database")
+        else:
+            collection.update_one({"_id": user.id}, {"$unset" : {f"{ctx.guild.id}": ""}})
+            await interaction.response.send_message(f"Removed {user.mention} from the database")
     except Exception as e:
-  	  await ctx.respond(e)
+  	  await interaction.response.send_message(e)
 
  
 @bot.event
 async def on_guild_join(guild):
-  channel = client.get_channel(947126649378447400)
-  embed=diskord.Embed(title="I joined a guild", description=f"{guild.name}", color=0x5bfa05)
+  channel = bot.get_channel(947126649378447400)
+  embed=discord.Embed(title="I joined a guild", description=f"{guild.name}", color=0x5bfa05)
   embed.timestamp = datetime.datetime.utcnow()
   await channel.send(embed=embed)
 
@@ -138,66 +129,60 @@ async def on_guild_join(guild):
 
 @bot.event
 async def on_guild_remove(guild):
-    channel = client.get_channel(947126649378447400)
-    embed=diskord.Embed(title="I Left a guild", description=f"{guild.name}", color=0xfa0505)
+    channel = bot.get_channel(947126649378447400)
+    embed=discord.Embed(title="I Left a guild", description=f"{guild.name}", color=0xfa0505)
     embed.timestamp = datetime.datetime.utcnow()
     await channel.send(embed=embed)
     collection.update_many( { }, { "$unset": { str(guild.id): "" } } )
 
-@bot.event
-async def on_command_error(self, ctx, error):
-  if isinstance(error, commands.CommandNotFound):
-      return
+    results = collection.find()
+    for result in results:
+        counter = 0
+        for query in result:
+            if str(query) == "_id":
+                # this is the objects ID, all objects have this
+                pass
+            else:
+                counter = counter + 1
+            if counter == 0:
+                try:
+                    collection.delete_one(result)
+                except:
+                    pass
 
-  if isinstance(error, commands.BotMissingPermissions):
-      await ctx.respond("I am missing required permissions to run this command")
-      return
+@tree.command(description="Check the latency of a bot")
+async def ping(interaction: discord.Interaction):
+  await interaction.response.send_message(f":ping_pong: Pong!\n **Bot**: {round(bot.latency * 1000)} ms")  
 
-  if isinstance(error, commands.MissingPermissions):
-      await ctx.respond("You are missing required permissions to run this command")
-      return
+@tree.command(description="Get a link to invite the bot")
+async def invite(interaction: discord.Interaction):
+  await interaction.response.send_message("https://dsc.gg/status-checker")
 
-  await ctx.respond("A fatal error occured, please join the support server for more information")
+@tree.command(description="View the bots privacy policy")
+async def privacy(interaction: discord.Interaction):
+  await interaction.response.send_message("https://bit.ly/SC-Privacy-Policy")
 
-  channel = bot.get_channel(947126385254740028)
+@tree.command(description="View the bots Terms Of Service")
+async def terms(interaction: discord.Interaction):
+  await interaction.response.send_message("https://bit.ly/SC-TOS")
 
-  embed = discord.Embed(title="Error", description="An error was produced", color= int("0x36393f", 16)) # Initializing an Embed
-  embed.add_field(name=f"{ctx.author}", value=f"{error}")
-  await channel.send(embed=embed)
-
-@bot.slash_command(description="Check the latency of a bot")
-async def ping(ctx):
-  await ctx.respond(f":ping_pong: Pong!\n **Bot**: {round(bot.latency * 1000)} ms")  
-
-@bot.slash_command(description="Get a link to invite the bot")
-async def invite(ctx):
-  await ctx.respond("https://dsc.gg/status-checker")
-
-@bot.slash_command(description="View the bots privacy policy")
-async def privacy(ctx):
-  await ctx.respond("https://bit.ly/SC-Privacy-Policy")
-
-@bot.slash_command(description="View the bots Terms Of Service")
-async def terms(ctx):
-  await ctx.respond("https://bit.ly/SC-TOS")
-
-@bot.slash_command(description="Get some useful debugging information about the bot")
-async def debug(ctx):
-  embed=diskord.Embed(title="Debug Information",color=0x08bbe7)
+@tree.command(description="Get some useful debugging information about the bot")
+async def debug(interaction: discord.Interaction):
+  embed=discord.Embed(title="Debug Information",color=0x08bbe7)
   embed.add_field(name="Version", value="1.0.1", inline=True)
   embed.add_field(name="Version Name", value="Rick", inline=True)
   embed.add_field(name="Uptime", value=str(datetime.timedelta(seconds=int(round(time.time()-startTime)))), inline=True)
-  await ctx.respond(embed=embed)
+  await interaction.response.send_message(embed=embed)
 
-@bot.slash_command(description="Adds a bot to watch for status changes")
-@diskord.application.option("user", description="The user to watch the status of")
-@diskord.application.option("channel", description="The Channel to send down messages to")
-@diskord.application.option("down_message", description="The down message to send to the channel")
-@diskord.application.option("auto_publish", description="Whether the bot should publish the down message")
-@diskord.application.option("dm", description="Whether the bot should Direct Message you")
-@diskord.application.option("lock", description="Whether the bot should Lock the server if the bot goes down")
-@commands.has_permissions(manage_channels=True)
-async def add(ctx, user: diskord.User,channel: diskord.abc.GuildChannel, down_message: str, auto_publish: bool = False, dm:bool = False, lock:bool = False):
+@tree.command(description="Adds a bot to watch for status changes")
+@app_commands.describe(user="The user to watch the status of")
+@app_commands.describe(channel="The Channel to send down messages to")
+@app_commands.describe(down_message="The down message to send to the channel")
+@app_commands.describe(auto_publish="Whether the bot should publish the down message")
+@app_commands.describe(dm="Whether the bot should Direct Message you")
+@app_commands.describe(lock="Whether the bot should Lock the server if the bot goes down")
+@app_commands.checks.has_permissions(manage_channels=True)
+async def add(interaction: discord.Interaction, user: discord.User,channel: discord.abc.GuildChannel, down_message: str, auto_publish: bool = False, dm:bool = False, lock:bool = False):
   
   if dm == False:
     owner = 0
@@ -206,17 +191,17 @@ async def add(ctx, user: diskord.User,channel: diskord.abc.GuildChannel, down_me
   
   try:
     channel = bot.get_channel(int(channel.id))
-    if type(channel) != diskord.channel.TextChannel:
-      await ctx.respond("That doesn't look like a text channel to me")
+    if type(channel) != discord.channel.TextChannel:
+      await interaction.response.send_message("That doesn't look like a text channel to me")
       return
     if auto_publish == True and channel.is_news() == False:
       auto_publish = False
   except Exception as e:
-    await ctx.respond(f"Failed to get channel, this is usually becuase I do not have access or the channel does not exist. \n Error: || {e} ||")
+    await interaction.response.send_message(f"Failed to get channel, this is usually becuase I do not have access or the channel does not exist. \n Error: || {e} ||")
     return
   
   if user == bot.user.id:
-    await ctx.respond("You cannot add me for status checks\nYou can only add other bots")
+    await interaction.response.send_message("You cannot add me for status checks\nYou can only add other bots")
     return
     
   # get the bot
@@ -227,21 +212,21 @@ async def add(ctx, user: diskord.User,channel: diskord.abc.GuildChannel, down_me
   # Instead of try/catch, just check for permissions
   permissionsInChannel = channel.permissions_for(channel.guild.me)
   if not permissionsInChannel.send_messages: 
-    await ctx.respond("I cannot send messages in that channel")
+    await interaction.response.send_message("I cannot send messages in that channel")
     return
   if not permissionsInChannel.manage_messages: # Needed to be able to publish messages in an announcements channel
-    await ctx.respond("I cannot manage messages in that channel")
+    await interaction.response.send_message("I cannot manage messages in that channel")
     return
 
   if ctx.guild.me.server_permissions.manage_channels == False and lock == False:
-    await ctx.respond("In order to lock the server I need to have manage channels permissions")
+    await interaction.response.send_message("In order to lock the server I need to have manage channels permissions")
     return
   
   # If bot has all needed permissions, send a message in that channel (and catch the error if it fails somehow)
   try:
     message = await channel.send("<a:loading:949590942925611058> Loading Status Checker information")
   except:
-    await ctx.respond("I do not have permissions to send messages in that channel")
+    await interaction.response.send_message("I do not have permissions to send messages in that channel")
     return
 
   try:
@@ -250,7 +235,7 @@ async def add(ctx, user: diskord.User,channel: diskord.abc.GuildChannel, down_me
     collection.update_one({"_id": user.id}, {"$set" : {f"{ctx.guild.id}": [channel.id,message.id,down_message,auto_publish,owner,lock]}})
 
   await message.edit(content=f"Status Checker information loaded\nWatching {user.mention}")
-  await ctx.respond(f"Watching {user.mention} I will alert you if their status changes")
+  await interaction.response.send_message(f"Watching {user.mention} I will alert you if their status changes")
 
 updated = []
   
@@ -343,8 +328,6 @@ async def on_presence_update(before,after):
   await asyncio.sleep(10)
   updated.remove(before.id)
 
+# runs the bot
 
-
-keep_alive()  # Starts a webserver to be pinged
-token = os.environ.get("DISCORD_BOT_SECRET") 
-bot.run(token)  # Starts the bot
+bot.run(os.environ.get("DISCORD_BOT_SECRET"))

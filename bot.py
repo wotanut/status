@@ -79,7 +79,7 @@ async def status(interaction: discord.Interaction,user:discord.User):
   if not user.bot:
     await interaction.response.send_message("For privacy reasons, you can only check the status of a bot.")
     return
-  for i in ctx.guild.members:
+  for i in interaction.guild.members:
     if i.id == user.id:
       if str(i.status) == "online":
           await interaction.response.send_message(f"<:online:949589635061915648> {user.mention} is online")
@@ -100,10 +100,10 @@ async def remove(interaction: discord.Interaction, user:discord.User = None):
       return
     try:
     	if user == None:
-            collection.update_many( { }, { "$unset": { str(ctx.guild.id): "" } } )
-            await interaction.response.send_message(f"Removed all mentions of {ctx.guild.name} from the database")
+            collection.update_many( { }, { "$unset": { str(interaction.guild.id): "" } } )
+            await interaction.response.send_message(f"Removed all mentions of {interaction.guild.name} from the database")
         else:
-            collection.update_one({"_id": user.id}, {"$unset" : {f"{ctx.guild.id}": ""}})
+            collection.update_one({"_id": user.id}, {"$unset" : {f"{interaction.guild.id}": ""}})
             await interaction.response.send_message(f"Removed {user.mention} from the database")
     except Exception as e:
   	  await interaction.response.send_message(e)
@@ -187,7 +187,7 @@ async def add(interaction: discord.Interaction, user: discord.User,channel: disc
   if dm == False:
     owner = 0
   elif dm == True:
-    owner = ctx.author.id
+    owner = interaction.author.id
   
   try:
     channel = bot.get_channel(int(channel.id))
@@ -206,7 +206,7 @@ async def add(interaction: discord.Interaction, user: discord.User,channel: disc
     
   # get the bot
   if not user.bot:
-    await ctx.send("For privacy reasons I can only track bots")
+    await interaction.response.send_message("For privacy reasons I can only track bots")
     return
 
   # Instead of try/catch, just check for permissions
@@ -218,7 +218,7 @@ async def add(interaction: discord.Interaction, user: discord.User,channel: disc
     await interaction.response.send_message("I cannot manage messages in that channel")
     return
 
-  if ctx.guild.me.server_permissions.manage_channels == False and lock == False:
+  if interaction.guild.me.server_permissions.manage_channels == False and lock == False:
     await interaction.response.send_message("In order to lock the server I need to have manage channels permissions")
     return
   
@@ -230,9 +230,9 @@ async def add(interaction: discord.Interaction, user: discord.User,channel: disc
     return
 
   try:
-    collection.insert_one({"_id": user.id, f"{ctx.guild.id}": [channel.id,message.id,down_message,auto_publish,owner,lock]})
+    collection.insert_one({"_id": user.id, f"{interaction.guild.id}": [channel.id,message.id,down_message,auto_publish,owner,lock]})
   except:
-    collection.update_one({"_id": user.id}, {"$set" : {f"{ctx.guild.id}": [channel.id,message.id,down_message,auto_publish,owner,lock]}})
+    collection.update_one({"_id": user.id}, {"$set" : {f"{interaction.guild.id}": [channel.id,message.id,down_message,auto_publish,owner,lock]}})
 
   await message.edit(content=f"Status Checker information loaded\nWatching {user.mention}")
   await interaction.response.send_message(f"Watching {user.mention} I will alert you if their status changes")

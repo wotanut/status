@@ -119,13 +119,16 @@ async def on_guild_join(guild):
   async with aiohttp.ClientSession() as session:
     top = 'https://top.gg/api/bots/845943691386290198/stats'
     dsl = 'https://api.discordlist.space/v2/bots/845943691386290198'
+    dbg = 'https://discord.bots.gg/api/v1/bots/845943691386290198/stats'
     async with session.post(top,headers={"Authorization": os.getenv("top")},json={"server_count": int(len(bot.guilds))}) as resp:
         response = await resp.json()
         pass
     async with session.post(dsl,headers={"Authorization": os.getenv("dsl")},json={"serverCount": int(len(bot.guilds))}) as resp:
         response = await resp.json()
         pass
-    
+    async with session.post(dbg,headers={"Authorization": os.getenv("dbg")},json={"guildCount": int(len(bot.guilds))}) as resp:
+        response = await resp.json()
+        pass
 
 @bot.event
 async def on_guild_remove(guild):

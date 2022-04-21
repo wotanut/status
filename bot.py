@@ -286,28 +286,28 @@ async def on_presence_update(before,after):
             if str(after.status) == "online":
                 await msg.edit(content=f"<:online:949589635061915648> {user.mention} is online")
                 if lock == True:
-                  perms = ctx.channel.overwrites_for(ctx.guild.default_role)
+                  perms = channel.overwrites_for(channel.guild.default_role)
                   perms.send_messages=True
-                  await ctx.channel.set_permissions(ctx.guild.default_role, overwrite=perms)
+                  await channel.set_permissions(channel.guild.default_role, overwrite=perms)
 
             elif str(after.status) == "idle":
               await msg.edit(content=f"<:idle:949589635087081503> {user.mention} is on idle")
               if lock == True:
-                  perms = ctx.channel.overwrites_for(ctx.guild.default_role)
+                  perms = channel.overwrites_for(channel.guild.default_role)
                   perms.send_messages=True
-                  await ctx.channel.set_permissions(ctx.guild.default_role, overwrite=perms)
+                  await channel.set_permissions(channel.guild.default_role, overwrite=perms)
             elif str(after.status) == "dnd":
               await msg.edit(content=f"<:dnd:949589635091284019> {user.mention} is on do not disturb")
               if lock == True:
-                  perms = ctx.channel.overwrites_for(ctx.guild.default_role)
+                  perms = channel.overwrites_for(channel.guild.default_role)
                   perms.send_messages=True
-                  await ctx.channel.set_permissions(ctx.guild.default_role, overwrite=perms)
+                  await channel.set_permissions(channel.guild.default_role, overwrite=perms)
             else:
               await msg.edit(content=f"<:offline:949589634898350101> {user.mention} is offline")
               if lock == True:
-                  perms = ctx.channel.overwrites_for(ctx.guild.default_role)
+                  perms = channel.overwrites_for(channel.guild.default_role)
                   perms.send_messages=False
-                  await ctx.channel.set_permissions(ctx.guild.default_role, overwrite=perms)
+                  await channel.set_permissions(channel.guild.default_role, overwrite=perms)
 
               down_msg = await channel.send(down_message)
               if auto_publish == True:

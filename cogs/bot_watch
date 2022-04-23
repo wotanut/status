@@ -59,7 +59,7 @@ class bot_watch(app_commands.Group):
     @app_commands.describe(dm="Whether the bot should Direct Message you")
     @app_commands.describe(lock="Whether the bot should Lock the server if the bot goes down")
     @app_commands.checks.has_permissions(manage_channels=True)
-    async def add(self, interaction: discord.Interaction, user: discord.User,channel: discord.abc.GuildChannel, down_message: str, auto_publish: bool = False, dm:bool = False, lock:bool = False):
+    async def add(self, interaction: discord.Interaction, user: discord.User,channel: discord.TextChannel, down_message: str, auto_publish: bool = False, dm:bool = False, lock:bool = False):
         """Adds a bot to watch for status changes"""
     
         if dm == False:

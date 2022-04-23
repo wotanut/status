@@ -72,7 +72,6 @@ async def on_ready():  # When the bot is ready
 
     startTime = time.time()
  
-
 # runs the bot
 
 bot.run(os.environ.get("DISCORD_BOT_SECRET"))

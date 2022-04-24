@@ -2,12 +2,8 @@ import discord
 from discord import app_commands
 from pymongo import MongoClient
 import os
-import datetime
-from datetime import time
-
 
 # database connection
-
 cluster = MongoClient(os.environ.get("mongo"))
 db = cluster["discord"]
 collection = db["status"]

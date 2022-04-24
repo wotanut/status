@@ -1,15 +1,12 @@
 import discord
 from discord.ext import commands
-from discord.ext.commands import command, Cog
 from pymongo import MongoClient
+import aiohttp
 import asyncio
 import os
 import datetime
-from datetime import time
-
 
 # database connection
-
 cluster = MongoClient(os.environ.get("mongo"))
 db = cluster["discord"]
 collection = db["status"]
@@ -141,9 +138,9 @@ class events(commands.Cog):
         await channel.send(embed=embed)
 
         async with aiohttp.ClientSession() as session:
-            top = 'https://top.gg/api/bots/845943691386290198/stats'
-            dsl = 'https://api.discordlist.space/v2/bots/845943691386290198'
-            dbg = 'https://discord.bots.gg/api/v1/bots/845943691386290198/stats'
+            top = "https://top.gg/api/bots/845943691386290198/stats"
+            dsl = "https://api.discordlist.space/v2/bots/845943691386290198"
+            dbg = "https://discord.bots.gg/api/v1/bots/845943691386290198/stats"
             async with session.post(top,headers={"Authorization": os.getenv("top")},json={"server_count": int(len(bot.guilds))}) as resp:
                 response = await resp.json()
                 pass

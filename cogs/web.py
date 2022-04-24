@@ -6,7 +6,6 @@ import requests
 import os
 
 # database connection
-
 cluster = MongoClient(os.environ.get("mongo"))
 db = cluster["discord"]
 collection = db["status"]
@@ -14,16 +13,13 @@ collection = db["status"]
 class web(app_commands.Group):
     """Watch over Websites"""
 
-
-    web = app_commands.Group(name='bot', description='All commands related to bots')
-
-    @web.command(description="Check the status of a website")
+    @app_commands.command(description="Check the status of a website")
     @app_commands.describe(url = "The website to check on")
     async def status(self, interaction: discord.Interaction,url:str):
         """Check the status of a website"""
         await interaction.response.send_message(f"The website responded with the status code: {requests.get(url=url).status_code} \n {requests.get(url=url).reason}")
 
-    @web.command(description="Check the latency of a website")
+    @app_commands.command(description="Check the latency of a website")
     @app_commands.describe(url = "The website to check on")
     async def latency(self, interaction: discord.Interaction,url:str):
         """Check the latency of a website"""

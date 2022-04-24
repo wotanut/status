@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from pymongo import MongoClient
+import aiohttp
 import asyncio
 import os
 import datetime

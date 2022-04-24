@@ -19,7 +19,7 @@ Yes, it's that simple. Add Status Checker today and let your members know of dow
 I kindly ask that you don't for the following reasons:
 - You have to sort out and pay for a host.
 - When it goes wrong (and it will) you'll flood our support channels asking for help, they are not for this and no help will be provided.
-- Your bot won't stay up to date with latest vunerabilities/changes in code.
+- Your bot won't stay up to date with latest vulnerabilities/changes in code.
 
 # Contributing
 

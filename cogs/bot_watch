@@ -4,17 +4,14 @@ from pymongo import MongoClient
 import os
 
 # database connection
-
 cluster = MongoClient(os.environ.get("mongo"))
 db = cluster["discord"]
 collection = db["status"]
 
-class bot_watch(app_commands.Group):
+class Bot(app_commands.Group):
     """Watch over bots"""
 
-    bot = app_commands.Group(name='bot', description='All commands related to bots')
-
-    @bot.command(description="Check the status of a bot")
+    @app_commands.command(description="Check the status of a bot")
     @app_commands.describe(user = "The user to check the status of")
     async def status(self, interaction: discord.Interaction,user:discord.User):
         """Check the status of a bot"""
@@ -32,7 +29,7 @@ class bot_watch(app_commands.Group):
                 else:
                     await interaction.response.send_message(f"<:offline:949589634898350101> {user.mention} is offline.")
     
-    @bot.command(description="Clears every mention of your guild from the database")
+    @app_commands.command(description="Clears every mention of your guild from the database")
     @app_commands.describe(user="The bot to remove from the database")
     @app_commands.checks.has_permissions(manage_channels=True)
     async def remove(self,interaction: discord.Interaction, user:discord.User = None):
@@ -51,7 +48,7 @@ class bot_watch(app_commands.Group):
             except Exception as e:
                 await interaction.response.send_message(e)
 
-    @bot.command(description="Adds a bot to watch for status changes")
+    @app_commands.command(description="Adds a bot to watch for status changes")
     @app_commands.describe(user="The user to watch the status of")
     @app_commands.describe(channel="The Channel to send down messages to")
     @app_commands.describe(down_message="The down message to send to the channel")

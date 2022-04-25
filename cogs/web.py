@@ -10,7 +10,7 @@ cluster = MongoClient(os.environ.get("mongo"))
 db = cluster["discord"]
 collection = db["status"]
 
-class web(app_commands.Group):
+class Web(app_commands.Group):
     """Watch over Websites"""
 
     @app_commands.command(description="Check the status of a website")

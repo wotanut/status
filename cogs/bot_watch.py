@@ -8,7 +8,7 @@ cluster = MongoClient(os.environ.get("mongo"))
 db = cluster["discord"]
 collection = db["status"]
 
-class bot_watch(app_commands.Group):
+class Bot(app_commands.Group):
     """Watch over bots"""
 
     @app_commands.command(description="Check the status of a bot")

@@ -6,11 +6,10 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 
 # import cogs
-from cogs.bot_watch import bot_watch
-from cogs.events import events
+from cogs.bots import Bot
 from cogs.misc import misc
-from cogs.mc import MC
-from cogs.web import web
+from cogs.mc import Minecraft
+from cogs.web import Web
 
 load_dotenv()
 
@@ -36,11 +35,10 @@ cogs = ["cogs.events"]
 
 @bot.event 
 async def on_ready():  # When the bot is ready
-    tree.add_command(bot_watch())
-    tree.add_command(events())
+    tree.add_command(Bot())
     tree.add_command(misc())
-    tree.add_command(MC())
-    tree.add_command(web())
+    tree.add_command(Minecraft())
+    tree.add_command(Web())
 
     for cog in cogs:
       try:

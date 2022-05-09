@@ -8,11 +8,23 @@ Status Checker aims to solve this problem. With just a few commands, you can hav
 
 # Command List
 
-`/add <channel> <bot> <custom down message> <auto publishing>` - add a bot to track.
+There are 4 subcommand groups
 
-`/remove` - remove a bot to track.
+Bot
+- status
+- add
+- remove
 
-Yes, it's that simple. Add Status Checker today and let your members know of downtimes immediately.
+Minecraft
+- Status
+- Latency
+
+Web
+- Status
+- Latency
+
+Misc
+- all other sub commands
 
 # Self Hosting
 

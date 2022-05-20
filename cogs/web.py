@@ -25,8 +25,8 @@ class Web(app_commands.Group):
         """Check the latency of a website"""
         await interaction.response.send_message(f"The website responded in {requests.get(url=url).elapsed.total_seconds()} seconds")
     
-    #@web.command(description="Take a screenshot of a website")
-    #@app_commands.describe(url = "The website to take a screenshot of")
-    #async def screenshot(self, interaction: discord.Interaction,url:str):
-    #    """Take a screenshot of a website"""
-    #    await interaction.response.send_file(requests.get(url=url).content, filename="screenshot.png")
+    @web.command(description="Take a screenshot of a website")
+    @app_commands.describe(url = "The website to take a screenshot of")
+    async def screenshot(self, interaction: discord.Interaction,url:str):
+        """Take a screenshot of a website"""
+        await interaction.response.send_file(requests.get(url=f"https://image.thum.io/get/{url}"), filename="screenshot.png")

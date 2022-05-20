@@ -25,6 +25,9 @@ def terms():
 def index():
     return redirect("https://discord.com/api/oauth2/authorize?client_id=845943691386290198&permissions=2147896384&scope=bot%20applications.commands")
 
+@app.route("/docs")
+def docs():
+    return redirect("docs")
 
 # errors
 

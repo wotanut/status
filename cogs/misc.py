@@ -11,20 +11,6 @@ collection = db["status"]
 class misc(app_commands.Group):
     """Misc commands"""
 
-    @app_commands.command(description="Give some information about the bot")
-    async def stats(self,interaction: discord.Interaction):
-        members = 0
-        for guild in self.bot.guilds:
-            members += guild.member_count - 1
-
-        
-        embed=discord.Embed(title="Status Checker Stats")
-        embed.set_author(name="Made by SamBot#7421", url="https://github.com/wotanut")
-        embed.add_field(name="Guilds", value=f"```{len(self.bot.guilds)}```", inline=True) 
-        embed.add_field(name="Users", value=f"```{members}```", inline=True)
-        embed.set_footer(text="Thank you for supporting Status Checker :)")
-        await interaction.response.send_message(embed=embed)
-
     @app_commands.command(description="Check the latency of a bot")
     async def ping(self,interaction: discord.Interaction):
         await interaction.response.send_message(f":ping_pong: Pong!\n **Bot**: {round(self.bot.latency * 1000)} ms")  
@@ -44,7 +30,7 @@ class misc(app_commands.Group):
     @app_commands.command(description="Get some useful debugging information about the bot")
     async def debug(self,interaction: discord.Interaction):
         embed=discord.Embed(title="Debug Information",color=0x08bbe7)
-        embed.add_field(name="Version", value="1.0.1", inline=True)
+        embed.add_field(name="Version", value="1.0.2", inline=True)
         embed.add_field(name="Version Name", value="Rick", inline=True)
         # embed.add_field(name="Uptime", value=str(datetime.timedelta(seconds=int(round(time.time()-startTime)))), inline=True)
         await interaction.response.send_message(embed=embed)

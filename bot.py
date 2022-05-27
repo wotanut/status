@@ -3,6 +3,7 @@ import discord
 from discord import app_commands
 import datetime
 import asyncio
+import aiohttp
 from pymongo import MongoClient
 from dotenv import load_dotenv
 

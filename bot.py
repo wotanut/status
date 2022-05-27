@@ -3,13 +3,12 @@ import discord
 from discord import app_commands
 import datetime
 import asyncio
-from datetime import time
 from pymongo import MongoClient
 from dotenv import load_dotenv
 
 # import cogs
 from cogs.bots import Bot
-from cogs.misc import misc
+from cogs.misc import Misc
 from cogs.mc import Minecraft
 from cogs.web import Web
 
@@ -32,23 +31,21 @@ bot = discord.Client(intents=intents)
 
 tree = app_commands.CommandTree(bot)
 
-# fires when the bot is ready
-cogs = ["cogs.events"]
-
 @bot.event 
 async def on_ready():  # When the bot is ready
     tree.add_command(Bot())
-    tree.add_command(misc())
+    tree.add_command(Misc())
     tree.add_command(Minecraft())
     tree.add_command(Web())
 
     await tree.sync()  # Syncs the command tree
 
-    print("I'm in")
+    print("Ready!")
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="over your bots!"))
     print(bot.user)  # Prints the bot's username and identifier
 
-    startTime = time()
+    # Unused variable, why?
+    #startTime = time()
 
 updated = []
 
@@ -60,12 +57,14 @@ async def stats(self,interaction: discord.Interaction):
 
     
     embed=discord.Embed(title="Status Checker Stats")
-    embed.set_author(name="Made by SamBot#7421", url="https://github.com/wotanut")
+    embed.set_author(name="Concept by SamBot#7421", url="https://github.com/wotanut")
     embed.add_field(name="Guilds", value=f"```{len(self.bot.guilds)}```", inline=True) 
     embed.add_field(name="Users", value=f"```{members}```", inline=True)
     embed.set_footer(text="Thank you for supporting Status Checker :)")
     await interaction.response.send_message(embed=embed)
 
+
+# Isn't this supposed to be in bots.py?
 @tree.command(description="Adds a bot to watch for status changes")
 @app_commands.describe(user="The user to watch the status of")
 @app_commands.describe(channel="The Channel to send down messages to")
@@ -129,6 +128,10 @@ async def add(self, interaction: discord.Interaction, user: discord.User,channel
 
     await message.edit(content=f"Status Checker information loaded\nWatching {user.mention}")
     await interaction.response.send_message(f"Watching {user.mention} I will alert you if their status changes")
+
+@tree.command(description="Check the latency of a bot")
+async def ping(self,interaction: discord.Interaction):
+    await interaction.response.send_message(f":ping_pong: Pong!\n **Bot**: {round(self.bot.latency * 1000)} ms")  
 
 @bot.event
 async def on_presence_update(before,after):

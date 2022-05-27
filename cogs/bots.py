@@ -12,7 +12,7 @@ class Bot(app_commands.Group):
     """Watch over bots"""
 
     @app_commands.command(description="Check the status of a bot")
-    @app_commands.describe(user = "The user to check the status of")
+    @app_commands.describe(user="The user to check the status of")
     async def status(self, interaction: discord.Interaction,user:discord.User):
         """Check the status of a bot"""
         if not user.bot:
@@ -32,7 +32,7 @@ class Bot(app_commands.Group):
     @app_commands.command(description="Clears every mention of your guild from the database")
     @app_commands.describe(user="The bot to remove from the database")
     @app_commands.checks.has_permissions(manage_channels=True)
-    async def remove(self,interaction: discord.Interaction, user:discord.User = None):
+    async def remove(self ,interaction: discord.Interaction, user:discord.User = None):
         """Clears every mention of your bot from the database"""
         if user != None:
             if not user.bot:

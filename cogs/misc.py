@@ -8,12 +8,12 @@ cluster = MongoClient(os.environ.get("mongo"))
 db = cluster["discord"]
 collection = db["status"]
 
-class misc(app_commands.Group):
+class Misc(app_commands.Group):
     """Misc commands"""
 
-    @app_commands.command(description="Check the latency of a bot")
-    async def ping(self,interaction: discord.Interaction):
-        await interaction.response.send_message(f":ping_pong: Pong!\n **Bot**: {round(self.bot.latency * 1000)} ms")  
+    #@app_commands.command(description="Check the latency of a bot")
+    #async def ping(self,interaction: discord.Interaction):
+    #    await interaction.response.send_message(f":ping_pong: Pong!\n **Bot**: {round(self.bot.latency * 1000)} ms")  
 
     @app_commands.command(description="Get a link to invite the bot")
     async def invite(self,interaction: discord.Interaction):

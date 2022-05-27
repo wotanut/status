@@ -1,4 +1,3 @@
-from doctest import debug_script
 import discord
 from discord import app_commands
 from pymongo import MongoClient
@@ -25,7 +24,7 @@ class Web(app_commands.Group):
         """Check the latency of a website"""
         await interaction.response.send_message(f"The website responded in {requests.get(url=url).elapsed.total_seconds()} seconds")
     
-    @web.command(description="Take a screenshot of a website")
+    @app_commands.command(description="Take a screenshot of a website")
     @app_commands.describe(url = "The website to take a screenshot of")
     async def screenshot(self, interaction: discord.Interaction,url:str):
         """Take a screenshot of a website"""

@@ -28,4 +28,6 @@ class Web(app_commands.Group):
     @app_commands.describe(url = "The website to take a screenshot of")
     async def screenshot(self, interaction: discord.Interaction,url:str):
         """Take a screenshot of a website"""
-        await interaction.response.send_file(requests.get(url=f"https://image.thum.io/get/{url}"), filename="screenshot.png")
+        embed = discord.Embed(title="Screenshot", description=f"The screenshot of {url}", color=0x00ff00)
+        embed.set_image(url=f"https://image.thum.io/get/{url}")
+        await interaction.response.send_message(embed=embed)

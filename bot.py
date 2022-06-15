@@ -51,7 +51,7 @@ async def on_ready():  # When the bot is ready
 updated = []
 
 @app_commands.command(description="Give some information about the bot")
-async def stats(self,interaction: discord.Interaction):
+async def stats(interaction: discord.Interaction):
     members = 0
     for guild in bot.guilds:
         members += guild.member_count - 1
@@ -59,7 +59,7 @@ async def stats(self,interaction: discord.Interaction):
     
     embed=discord.Embed(title="Status Checker Stats")
     embed.set_author(name="Concept by SamBot#7421", url="https://github.com/wotanut")
-    embed.add_field(name="Guilds", value=f"```{len(self.bot.guilds)}```", inline=True) 
+    embed.add_field(name="Guilds", value=f"```{len(bot.guilds)}```", inline=True) 
     embed.add_field(name="Users", value=f"```{members}```", inline=True)
     embed.set_footer(text="Thank you for supporting Status Checker :)")
     await interaction.response.send_message(embed=embed)
@@ -74,13 +74,13 @@ async def stats(self,interaction: discord.Interaction):
 @app_commands.describe(dm="Whether the bot should Direct Message you")
 @app_commands.describe(lock="Whether the bot should Lock the server if the bot goes down")
 @app_commands.checks.has_permissions(manage_channels=True)
-async def add(self, interaction: discord.Interaction, user: discord.User,channel: discord.TextChannel, down_message: str, auto_publish: bool = False, dm:bool = False, lock:bool = False):
+async def add(interaction: discord.Interaction, user: discord.User,channel: discord.TextChannel, down_message: str, auto_publish: bool = False, dm:bool = False, lock:bool = False):
     """Adds a bot to watch for status changes"""
 
     if dm == False:
         owner = 0
     elif dm == True:
-        owner = interaction.author.id
+        owner = interaction.message.author.id
 
     try:
         channel = bot.get_channel(int(channel.id))
@@ -131,8 +131,8 @@ async def add(self, interaction: discord.Interaction, user: discord.User,channel
     await interaction.response.send_message(f"Watching {user.mention} I will alert you if their status changes")
 
 @tree.command(description="Check the latency of a bot")
-async def ping(self,interaction: discord.Interaction):
-    await interaction.response.send_message(f":ping_pong: Pong!\n **Bot**: {round(self.bot.latency * 1000)} ms")  
+async def ping(interaction: discord.Interaction):
+    await interaction.response.send_message(f":ping_pong: Pong!\n **Bot**: {round(bot.latency * 1000)} ms")  
 
 @bot.event
 async def on_presence_update(before,after):

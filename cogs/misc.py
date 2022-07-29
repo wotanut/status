@@ -46,3 +46,33 @@ class Misc(app_commands.Group):
         embed.add_field(name="I have a bug to report", value="Please do so in our [support server ](https://discord.gg/2w5KSXjhGe)", inline=True)
         embed.add_field(name="How do I get started?", value="/add", inline=True)
         await interaction.response.send_message(embed=embed)
+
+    @app_commands.command(desription="Get the down message for your bot")
+    @app_commands.describe(user="The user to get the down message for")
+    async def config(interaction: discord.Interaction, user: discord.User):
+        try:
+            results = collection.find()
+            for result in results:
+
+                if str(result["_id"]) != str(user.id):
+                    # pass do literally nothing
+                    pass
+                else:
+                    for query in result:
+                        if str(query) == "_id":
+                            pass
+                        else:
+                            server = result[query]
+                            channel = bot.get_channel(server[0])
+                            down_message = server[2]
+                            auto_publish = server[3]
+                            lock = server[5]
+                            embed=discord.Embed(title="Config", description="Shows the config of the selected user")
+                            embed.add_field(name="Down Message", value="{down_message}", inline=True)
+                            embed.add_field(name="Channel set", value="<#{channel.id}>")
+                            embed.add_field(name="Auto Publish", value="Auto Publish is set to {auto_publish}", inline=False)
+                            embed.add_field(name="Lock", value="Locking the server is set to {lock}", inline=True)
+                            await interaction.response.send_message(embed=embed)
+        except Exception as e:
+            print(e)
+            pass

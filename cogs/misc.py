@@ -49,7 +49,7 @@ class Misc(app_commands.Group):
 
     @app_commands.command(description="Get the down message for your bot")
     @app_commands.describe(user="The user to get the down message for")
-    async def config(interaction: discord.Interaction, user: discord.User):
+    async def config(self, interaction: discord.Interaction, user: discord.User):
         try:
             results = collection.find()
             for result in results:

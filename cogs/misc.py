@@ -47,9 +47,9 @@ class Misc(app_commands.Group):
         embed.add_field(name="How do I get started?", value="/add", inline=True)
         await interaction.response.send_message(embed=embed)
 
-    @app_commands.command(desription="Get the down message for your bot")
+    @app_commands.command(description="Get the down message for your bot")
     @app_commands.describe(user="The user to get the down message for")
-    async def config(interaction: discord.Interaction, user: discord.User):
+    async def config(self, interaction: discord.Interaction, user: discord.User):
         try:
             results = collection.find()
             for result in results:

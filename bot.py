@@ -80,7 +80,7 @@ async def add(interaction: discord.Interaction, user: discord.User,channel: disc
     if dm == False:
         owner = 0
     elif dm == True:
-        owner = interaction.message.author.id
+        owner = interaction.user.id
 
     try:
         channel = bot.get_channel(int(channel.id))
@@ -111,7 +111,7 @@ async def add(interaction: discord.Interaction, user: discord.User,channel: disc
         await interaction.response.send_message("I cannot manage messages in that channel")
         return
 
-    if interaction.guild.me.server_permissions.manage_channels == False and lock == False:
+    if interaction.guild.me.guild_permissions.manage_channels == False and lock == False:
         await interaction.response.send_message("In order to lock the server I need to have manage channels permissions")
         return
 

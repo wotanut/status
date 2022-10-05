@@ -28,6 +28,22 @@ def remove_from_db(id):
     """ Removes an application from the database """
     return jsonify({"status": "ok"})
 
+@app.route("/docs")
+def docs():
+    return render_template("docs.html")
+
+@app.route("/discord")
+def discord():
+    return redirect("https://discord.gg/2w5KSXjhGe")
+
+@app.route("/youtube")
+def youtube():
+    return redirect("https://www.youtube.com/channel/UCIVkp1F5JSyE0IKALyPW5sg")
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
 
 
 def check_if_database_exists():

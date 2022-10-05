@@ -1,0 +1,45 @@
+{
+    "application_type": "web",
+    "application_url": "https://example.com",
+    "notifications": {
+        "webhook": {
+            "url": "https://example.com/webhook",
+            "content_type": "application/json",
+            "secret": "secret",
+            "payload": {
+                "foo": "bar"
+            }   
+        },
+        "dm": {
+            "id": "1234567890",
+            "content_type": "text/plain",
+            "payload": {
+                
+            }
+        },
+        "email": {
+            "email": "contact@sblue.tech",
+            "content_type": "html/text",
+            "payload": {
+                
+            }
+        },
+        "sms":{
+            "phone": "1234567890",
+            "content_type": "text/plain",
+            "payload": {
+                
+            }
+        },
+        "discord":{
+            "guild": "1234567890",
+            "channel": "1234567890",
+            "content_type": "application/json",
+            "payload": {
+                
+            },
+            "auto-publish": true,
+            "server-lock": false
+        }
+    }
+}

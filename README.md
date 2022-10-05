@@ -2,45 +2,30 @@
   Status Checker  
 </h1>
 
-Picture this, it's 4am and suddenly your bot goes down. Users begin complaining and flooding your support channel. Nobody is online to help.
+Picture this, it's 4am and suddenly your server goes down. Users begin complaining and flooding your support channels. Nobody is online to help.
 
-Status Checker aims to solve this problem. With just a few commands, you can have notifications for your bot setup so that the instant your bot goes offline, your members are aware of it. Custom down messages and automatically publishing them for free.
-
-# Command List
-
-There are 4 subcommand groups
-
-Bot
-- status
-- add
-- remove
-
-Minecraft
-- Status
-- Latency
-
-Web
-- Status
-- Latency
-
-Misc
-- all other sub commands
-
+Status Checker aims to solve this problem. With just a few commands, you can have notifications for your server setup so that the instant your bot goes offline, your members are aware of it. Custom down messages publishing them for free.
 # Self Hosting
 
-I kindly ask that you don't for the following reasons:
+I kindly ask that you don't, at least not for now, for the following reasons:
 - You have to sort out and pay for a host.
 - When it goes wrong (and it will) you'll flood our support channels asking for help, they are not for this and no help will be provided.
 - Your bot won't stay up to date with latest vulnerabilities/changes in code.
 
+# running the bot
+
+If you do end up running the bot you have a number of options
+- python3 run.py
+- bash run.sh (macOS and Linux only)
+- run.bat (Windows only)
+- Docker container
+
 # Contributing
 
-Just fork this repository and open a pull request, all contributions are welcome. Just please ensure that your Discord username and tag (example: Sambot#7421) are in your pull request so I can give you the contributors role.
+To contribute, please fork this repository and make a pull request. It is **HIGHLY** recommended that you join the [support server](https://discord.gg/2w5KSXjhGe) to discuss your changes before you begin as other members may already be working on them.
 
 # Useful Links
 
-• [Invite](https://dsc.gg/status-checker)  
 • [Support Server](https://discord.gg/2w5KSXjhGe)
-
-<img src="https://top.gg/api/widget/845943691386290198.svg" alt="top.gg"/>
-<img src="https://api.discordlist.space/v2/bots/845943691386290198/widget?background=7289DA&radius=6" alt="discordlist.space"/>
+• [YouTube](https://www.youtube.com/channel/UCIVkp1F5JSyE0IKALyPW5sg)
+• [Ko-Fi](https://ko-fi.com/wotanut)

@@ -2,11 +2,15 @@ import discord
 from discord.ext import commands
 import datetime
 from helper import Helper
+from dotenv import load_dotenv
 
 intents = discord.Intents.default()
 discord.Intents.presences = True
 
 bot = discord.Client(intents=intents)
+
+load_dotenv()
+token = os.getenv('DISCORD_BOT_TOKEN')
 
 @bot.event
 async def on_ready():
@@ -62,6 +66,6 @@ async def on_guild_remove(guild):
 # furthermore commands for contributors and administrators should be added too.
 # web dashboard too :P
 
-token = "OTQ1MjY5MDcxODc0NzY0ODAw.G_n0Xy.-1HzoOk_w4RhOgh1mA9fmkRuh78qzlNSOakNuU" # this is insecure but I will edit this out
 
-bot.run(token=token)
+
+bot.run(token)

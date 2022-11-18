@@ -1,11 +1,29 @@
 import flask
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template, redirect
 
 app = Flask(__name__)
+
+# routing
  
 @app.route("/")
 def index():
-    return "Hello World"
+    return render_template("index.html")
+
+@app.route("/docs")
+def docs():
+    return render_template("docs.html")
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
+@app.route("/dashboard")
+def dashboard():
+    return render_template("dashboard.html")
+
+@app.route("/privacy")
+def privacy():
+    return render_template("privacy.html")
 
 # api
 
@@ -28,9 +46,7 @@ def remove_from_db(id):
     """ Removes an application from the database """
     return jsonify({"status": "ok"})
 
-@app.route("/docs")
-def docs():
-    return render_template("docs.html")
+# redirects
 
 @app.route("/discord")
 def discord():
@@ -39,11 +55,6 @@ def discord():
 @app.route("/youtube")
 def youtube():
     return redirect("https://www.youtube.com/channel/UCIVkp1F5JSyE0IKALyPW5sg")
-
-@app.route("/about")
-def about():
-    return render_template("about.html")
-
 
 
 def check_if_database_exists():

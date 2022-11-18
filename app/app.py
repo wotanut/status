@@ -1,3 +1,5 @@
+# discord imports
+
 from distutils.cmd import Command
 import discord
 from discord.ext import commands
@@ -5,23 +7,36 @@ import datetime
 from helper import Helper
 from dotenv import load_dotenv
 import os
+import asyncio
+
+# quart imports
+
+import quart
+from quart import Quart, jsonify, render_template, redirect
+from quart_discord import DiscordOAuth2Session, requires_authorization
+
+# other imports
+
+# general configuration
+
+load_dotenv()
+
+# discord specific configuration
 
 intents = discord.Intents.default()
 discord.Intents.presences = True
-
 bot = discord.Client(intents=intents)
 
-load_dotenv()
-token = os.getenv('DISCORD_BOT_TOKEN')
+# quart specific  configuration
 
-class bot_info():
-    def __init__(self):
-        self.name = "Status Checker"
-        self.id = 845943691386290198
-        self.token = ""
-        self.owner = "Sambot"
-        self.owner_id = 705798778472366131
-        self.start_time = datetime.datetime.now()
+app = Quart(__name__)
+app.secret_key = os.getenv('SECRET_KEY')
+app.config['DISCORD_CLIENT_ID'] = os.getenv('DISCORD_CLIENT_ID')
+app.config['DISCORD_CLIENT_SECRET'] = os.getenv('DISCORD_CLIENT_SECRET')
+app.config['DISCORD_REDIRECT_URI'] = "os.getenv('DISCORD_REDIRECT_URI')"
+oauth = DiscordOAuth2Session(app)
+
+# bot stuff
 
 @bot.event
 async def on_ready():
@@ -33,6 +48,16 @@ async def on_ready():
     await log_channel.send(embed=embed)
 
     # start checking the services
+
+    bot.loop.create_task(app.run(host="0.0.0.0",port=1234))
+    bot.loop.create_task(check_applications())
+
+async def check_applications():
+    """ Checks the applications every 5 minutes """
+    
+    while True:
+        await asyncio.sleep(300)
+        await Helper.check_applications(bot)
 
 @bot.event
 async def on_command_error(ctx,error):
@@ -116,7 +141,7 @@ async def on_guild_join(guild):
         pass
     # log the join
 
-    log_channel = bot.get_channel(949388038260273193)
+    log_channel = bot.get_channel(1042366316897636362)
     embed = discord.Embed(title="I joined a guild", description=f"Guild Name: {guild.name} \n Guild ID: {guild.id}", color=discord.Color.green())
 
 
@@ -127,13 +152,12 @@ async def on_guild_remove(guild):
     try:
         user = await bot.fetch_user(guild.owner_id)
         embed = discord.Embed(title="Hey there, I am sorry to see you go", description="All references of your guild have been removed from our database", color=discord.Color.red())
-
         # opportunity for a button
         await user.send(embed=embed)
     except:
         pass
 
-    log_channel = bot.get_channel(949388038260273193)
+    log_channel = bot.get_channel(1042366316897636362)
     embed = discord.Embed(title="I left a guild", description=f"Guild Name: {guild.name} \n Guild ID: {guild.id}", color=discord.Color.red())
 
 # other commands
@@ -150,6 +174,65 @@ async def on_guild_remove(guild):
 # furthermore commands for contributors and administrators should be added too.
 # web dashboard too :P
 
+# quartz stuff
 
 
-bot.run("token") # TODO: REMOVE THIS
+app = Quart(__name__)
+
+# routing
+ 
+@app.route("/")
+async def index():
+    return await render_template("index.html")
+
+@app.route("/docs")
+async def docs():
+    return await render_template("docs.html")
+
+@app.route("/about")
+async def about():
+    return await render_template("about.html")
+
+@app.route("/dashboard")
+async def dashboard():
+    return await render_template("dashboard.html")
+
+@app.route("/privacy")
+async def privacy():
+    return await render_template("privacy.html")
+
+# api
+
+@app.route("/api")
+async def api():
+    return await jsonify({"status": "ok"})
+
+@app.route("/api/get_from_db/<id>")
+async def get_from_db(id):
+    """ Get's an application from the database and returns a json object of the stats"""
+    return await jsonify({"status": "ok"})
+
+@app.route("/api/add_to_db/<id>")
+async def add_to_db(id):
+    """ Adds an application to the database """
+    return await jsonify({"status": "ok"})
+
+@app.route("/api/remove_from_db/<id>")
+async def remove_from_db(id):
+    """ Removes an application from the database """
+    return await jsonify({"status": "ok"})
+
+# redirects
+
+@app.route("/discord")
+async def discord():
+    return redirect("https://discord.gg/2w5KSXjhGe")
+
+@app.route("/youtube")
+async def youtube():
+    return redirect("https://www.youtube.com/channel/UCIVkp1F5JSyE0IKALyPW5sg")
+
+
+async def check_if_database_exists():
+    """ Checks if the database exists, if it doesn't it will create it """
+    pass

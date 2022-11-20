@@ -17,9 +17,15 @@ from quart_discord import DiscordOAuth2Session, requires_authorization
 
 # other imports
 
+# local imports
+
+from utilities.data import Application, User
+from utilities.database import Database
+
 # general configuration
 
 load_dotenv()
+Help = Helper()
 
 # discord specific configuration
 
@@ -57,7 +63,7 @@ async def check_applications():
     
     while True:
         await asyncio.sleep(300)
-        await Helper.check_applications(bot)
+        await Help.check_applications(bot)
 
 @bot.event
 async def on_command_error(ctx,error):
@@ -66,17 +72,27 @@ async def on_command_error(ctx,error):
     log_channel = bot.get_channel(949388038260273193)
     embed = discord.Embed(title="Error", description=f"An error occured: {error} \n In Guild: {ctx.guild.name} \n Guild Owner: {ctx.guild.owner.mention}", color=0xff0000)
     await log_channel.send(embed=embed)
-    
+
 @bot.event
 async def on_presence_update(before,after):
+
+    # checks
+
     if before.bot == True:
         return
     elif before.id == bot.user.id:
         return
     elif before.status == after.status:
         return
-    elif Helper.check_database(before.id) == False:
+    elif Help.Database.application_is_in_database(before.id) == False:
         return
+
+    # send the notification
+
+    await Help.send_notification(Help.Database.get_application(before.id).notifications,bot)
+
+@bot.event
+async def on_presence_update(before,after):
 
     application = Helper.get_from_database(before.id)
     if application["application_type"] != "bot":
@@ -231,8 +247,3 @@ async def discord():
 @app.route("/youtube")
 async def youtube():
     return redirect("https://www.youtube.com/channel/UCIVkp1F5JSyE0IKALyPW5sg")
-
-
-async def check_if_database_exists():
-    """ Checks if the database exists, if it doesn't it will create it """
-    pass

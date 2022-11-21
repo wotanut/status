@@ -48,7 +48,7 @@ class Helper():
         """
 
         url = data['url']
-        content_type = data['content']
+        content_type = data['content_type']
         payload = data['payload']
 
         r = requests.post(url, data=json.dumps(payload), headers={'Content-Type': content_type})
@@ -70,7 +70,7 @@ class Helper():
         """
 
         sender_email = "wotanutt@gmail.com"
-        receiver_email = data["email"]
+        receiver_email = data["address"]
         password = os.getenv("EMAIL_PASSWORD")
 
         message = MIMEMultipart("alternative")
@@ -80,14 +80,14 @@ class Helper():
 
         # Create the plain-text and HTML version of your message
         text = f"""\
-        Hi {data['name']}, your service {data['service']} is down.
+        Hi {data['address']}, {data['content']}
         
         This is an automated message, please do not reply to this email.
         """
-        html = """\
+        html = f"""\
         <html>
         <body>
-            <p>Hi {data['name']}, your service {data['service']} is down.</p>
+            <p>Hi {data['name']}, {data['content']}</p>
             <br>
             <p>This is an automated message, please do not reply to this email.</p>
         </body>

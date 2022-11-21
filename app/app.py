@@ -176,6 +176,17 @@ async def on_guild_remove(guild):
     log_channel = bot.get_channel(1042366316897636362)
     embed = discord.Embed(title="I left a guild", description=f"Guild Name: {guild.name} \n Guild ID: {guild.id}", color=discord.Color.red())
 
+@bot.command
+async def ping(ctx):
+    await ctx.send(f"Pong! {round(bot.latency * 1000)}ms")
+
+@bot.command
+async def invite(ctx):
+    try:
+        await ctx.author.send(f"Hey there {ctx.author.mention}. Here is the invite link you asked for: https://discord.com/api/oauth2/authorize?client_id=845943691386290198&permissions=380105055296&scope=bot%20applications.commands")
+    except:
+        await ctx.send(f"Hi {ctx.author.mention}, I am sorry but I cannot send you a DM. Please enable DMs from server members to use this command")
+
 # other commands
 # ping, help, config, subscribe,unsubscribe, info, uptime<service>, status<service>,invite, dashboard,privacy
 

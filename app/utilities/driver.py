@@ -11,6 +11,23 @@ class Driver():
     columns : str
         The columns to be created in the table
 
+    Methods
+    -------
+    __init__(table_name:str,columns:str) -> None
+        Constructor for the Driver class
+    create_table(table_name:str,columns:str) -> None
+        Creates a table in the database
+    insert(columns:str,values:str) -> None
+        Inserts a row into the table
+    select(columns:str,where:str) -> None
+        Selects a row from the table
+    update(where:str,columns:list,values:list) -> None
+        Updates a row in the table
+    delete(where:str) -> None
+        Deletes a row from the table
+    close() -> None
+        Closes the connection to the database
+
     Returns
     -------
     Driver
@@ -115,4 +132,11 @@ class Driver():
         self.conn.commit()
     
     def close(self):
+        """ 
+        Closes the connection to the database
+
+        Returns
+        -------
+        Void
+        """
         self.conn.close()

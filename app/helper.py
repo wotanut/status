@@ -16,6 +16,23 @@ class Helper():
     """
     Helper class
 
+    Methods
+    -------
+    webhook(data)
+        Sends a webhook
+    email(data)
+        Sends an email to the user
+    sms(data)
+        Sends an sms to the user
+    discord_direct_message(data,bot)
+        Sends a direct message to the user on discord
+    discord_server(data,bot)
+        Sends a discord message to the server
+    async send_notification(notification:json,bot=discord.Bot)
+        Sends the notification to the user
+    async check_applications(bot)
+        Checks the applications for any that need to be notified
+
     Returns
     -------
     Helper

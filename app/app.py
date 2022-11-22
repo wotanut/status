@@ -203,6 +203,8 @@ async def info(interaction):
     embed.add_field(name="Sounds cool, you mentioned open source, how can I contribute?", description="First of all, thanks for your interest in contributing to this project. You can check out the source code on (GitHub)[https://github.com/wotanut] where there is a more detailed contributing guide :)")
     embed.add_field(name="HELPPP", description="If you need help you can join the [Support Server](https://discord.gg/2w5KSXjhGe)")
     embed.add_field(name="WhErE iS yOuR pRiVaCy pOlIcY", description="We're a discord bot, I can't belive we need a privacy policy....but that's [here](http://bit.ly/SC-Privacy-Policy) and our TOS is [here](http://bit.ly/SC-TOS)")
+    embed.add_field(name="I have a suggestion / bug to report", description="You can join the [Support Server](https://discord.gg/2w5KSXjhGe) and report it there")
+    embed.add_field(name="How can I support this project?", description="Thanks for your interest in supporting this project. You can support this project by tipping me on [Ko-Fi](https://ko-fi.com/wotanut) or by starring the [GitHub repository](https://github.com/wotanut). Furthermore, joining the [Discord Server](https://discord.gg/2w5KSXjhGe) is a great way to support the project as well as getting help with the bot")
     embed.set_footer(text="Made with ❤️ by Sambot")
 
     await interaction.response.send_message(embed=embed)
@@ -218,7 +220,6 @@ async def status(interaction, service:str = None, bot:discord.Member = None):
             await interaction.response.send_message(f"Service {service} responded with status code {r.status_code}")
         except Exception as e:
             await interaction.response.send_message(f"Unable to get service {service}, are you sure it is a valid URL? \n \n Error: || {e} || ")
-    
 
 # other commands
 # help, config, subscribe,unsubscribe, uptime<service>, status<service>, dashboard

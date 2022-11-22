@@ -32,6 +32,11 @@ class User:
         The id of the user
     applications : json
         The applications the user has
+
+    Returns
+    -------
+    User
+        The user
     """
     id: int
     applications: json
@@ -39,6 +44,19 @@ class User:
 class notificationType(Enum):
     """
     Supported types of notifications
+
+    Attributes
+    ----------
+    WEBHOOK : str
+        A webhook
+    EMAIL : str
+        An email
+    DISCORD_DM : str
+        A discord direct message
+    DISCORD_CHANNEL : str
+        A discord channel message
+    SMS : str
+        An sms
 
     Returns
     -------

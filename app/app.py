@@ -3,11 +3,7 @@
 from distutils.cmd import Command
 import discord
 from discord.ext import commands
-import datetime
-from helper import Helper
-from dotenv import load_dotenv
-import os
-import asyncio
+from discord import app_commands
 
 # quart imports
 
@@ -17,10 +13,17 @@ from quart_discord import DiscordOAuth2Session, requires_authorization
 
 # other imports
 
+import requests
+from dotenv import load_dotenv
+import os
+import asyncio
+import datetime
+
 # local imports
 
 from utilities.data import Application, User
 from utilities.database import Database
+from helper import Helper
 
 # general configuration
 
@@ -32,6 +35,7 @@ Help = Helper()
 intents = discord.Intents.default()
 discord.Intents.presences = True
 bot = discord.Client(intents=intents)
+tree = app_commands.CommandTree(bot)
 
 # quart specific  configuration
 
@@ -57,6 +61,9 @@ async def on_ready():
 
     bot.loop.create_task(app.run(host="0.0.0.0",port=1234))
     bot.loop.create_task(check_applications())
+
+    # sync commands
+    await tree.sync(guild=discord.Object(id=939479619587952640))
 
 async def check_applications():
     """ Checks the applications every 5 minutes """
@@ -176,30 +183,57 @@ async def on_guild_remove(guild):
     log_channel = bot.get_channel(1042366316897636362)
     embed = discord.Embed(title="I left a guild", description=f"Guild Name: {guild.name} \n Guild ID: {guild.id}", color=discord.Color.red())
 
-@bot.command
-async def ping(ctx):
-    await ctx.send(f"Pong! {round(bot.latency * 1000)}ms")
+@tree.command(name="ping",descrirption="Checks the latency between our servers and discords")
+async def ping(interaction):
+    await interaction.response.send_message(f"Pong! {round(bot.latency * 1000)}ms")
 
-@bot.command
-async def invite(ctx):
+@tree.command(name="invite",description="Sends the invite link for the bot")
+async def invite(interaction):
     try:
-        await ctx.author.send(f"Hey there {ctx.author.mention}. Here is the invite link you asked for: https://discord.com/api/oauth2/authorize?client_id=845943691386290198&permissions=380105055296&scope=bot%20applications.commands")
+        await interaction.author.send(f"Hey there {interaction.author.mention}. Here is the invite link you asked for: https://discord.com/api/oauth2/authorize?client_id=845943691386290198&permissions=380105055296&scope=bot%20applications.commands")
     except:
-        await ctx.send(f"Hi {ctx.author.mention}, I am sorry but I cannot send you a DM. Please enable DMs from server members to use this command")
+        await interaction.author.send(f"Hi {interaction.author.mention}, I am sorry but I cannot send you a DM. Please enable DMs from server members to use this command")
+
+@tree.comand(name="info",description="Sends information about the bot")
+async def info(interaction):
+    embed = discord.Embed(title="Status Checker", description="A bot that will notify you when your application goes offline", color=discord.Color.green())
+    embed.set_author(name="Concept by Sambot", url="https://github.com/wotanut", icon_url="https://cdn.discordapp.com/avatars/705798778472366131/3dd73a994932174dadc65ff22b1ceb60.webp?size=2048")
+    embed.add_field(name="What is this?", description="Status Checker is an open source bot that notifies you when your application goes offline or becomes unresponsive.")
+    embed.add_field(name="How do I use it?", description="Each user has an \"account\" on the bot. For each user they can subscribe to an application and can send notifications to themselves or to a discord guild if they have manage server permissions in that guild. To subscribe to an application run `/subscribe` and to unsubscribe run `/unsubscribe`")
+    embed.add_field(name="Sounds cool, you mentioned open source, how can I contribute?", description="First of all, thanks for your interest in contributing to this project. You can check out the source code on (GitHub)[https://github.com/wotanut] where there is a more detailed contributing guide :)")
+    embed.add_field(name="HELPPP", description="If you need help you can join the [Support Server](https://discord.gg/2w5KSXjhGe)")
+    embed.add_field(name="WhErE iS yOuR pRiVaCy pOlIcY", description="We're a discord bot, I can't belive we need a privacy policy....but that's [here](http://bit.ly/SC-Privacy-Policy) and our TOS is [here](http://bit.ly/SC-TOS)")
+    embed.set_footer(text="Made with ❤️ by Sambot")
+
+    await interaction.response.send_message(embed=embed)
+
+@tree.command(name="status",description="Check the status of a service")
+async def status(interaction, service:str = None, bot:discord.Member = None):
+    if service == None and bot == None:
+        await interaction.response.send_message("Please provide a service or a bot to check the status of.")
+        return
+    elif service != None:
+        try:
+            r = requests.get(service)
+            await interaction.response.send_message(f"Service {service} responded with status code {r.status_code}")
+        except Exception as e:
+            await interaction.response.send_message(f"Unable to get service {service}, are you sure it is a valid URL? \n \n Error: || {e} || ")
+    
 
 # other commands
-# ping, help, config, subscribe,unsubscribe, info, uptime<service>, status<service>,invite, dashboard,privacy
+# help, config, subscribe,unsubscribe, uptime<service>, status<service>, dashboard
 
 # contributor commands
 # 
 
 # administrator commands
-# remove_Serivce
+# ban_guild
+# unban_guild
+# ban_user
+# unban_user
+# ban_service
+# unban_service
 
-
-# aside from this we need to add commands to watch other bots stop watching other bots and view the configuration of the guild
-# furthermore commands for contributors and administrators should be added too.
-# web dashboard too :P
 
 # quartz stuff
 

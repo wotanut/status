@@ -3,7 +3,7 @@
 from distutils.cmd import Command
 import discord
 from discord.ext import commands
-from discord import app_commands
+from discord import app_commands, SelectMenu, SelectOption
 
 # quart imports
 
@@ -21,7 +21,7 @@ import datetime
 
 # local imports
 
-from utilities.data import Application, User
+from utilities.data import Application, User, Meta
 from utilities.database import Database
 from helper import Helper
 
@@ -29,6 +29,7 @@ from helper import Helper
 
 load_dotenv()
 Help = Helper()
+meta = Meta()
 
 # discord specific configuration
 
@@ -64,6 +65,7 @@ async def on_ready():
 
     # sync commands
     await tree.sync(guild=discord.Object(id=939479619587952640))
+
 
 async def check_applications():
     """ Checks the applications every 5 minutes """
@@ -222,19 +224,96 @@ async def status(interaction, service:str = None, bot:discord.Member = None):
             await interaction.response.send_message(f"Unable to get service {service}, are you sure it is a valid URL? \n \n Error: || {e} || ")
 
 # other commands
-# help, config, subscribe,unsubscribe, uptime<service>, status<service>, dashboard
+# help, config, subscribe,unsubscribe, status<service>
 
 # contributor commands
-# 
+
+@tree.command(name="github", description="Sends the github link for the bot")
+async def github(interaction):
+    await interaction.response.send_message("https://github.com/wotanut/status")
+
+@tree.command(name="debug", description="Sends debug information for the bot")
+async def debug(interaction):
+    embed = discord.Embed(title="Debug Information", description="Debug information for the bot", color=discord.Color.blue())
+    embed.add_field(name="Bot Latency", value=f"{round(bot.latency * 1000)}ms")
+    embed.add_field(name="Bot Uptime", value=f"{datetime.datetime.now() - meta.start_time}")
+    embed.add_field(name="Bot Version", value=f"{meta.version} - {meta.version_name}")
+
+    await interaction.response.send_message(embed=embed)    
 
 # administrator commands
-# ban_guild
-# unban_guild
-# ban_user
-# unban_user
-# ban_service
-# unban_service
 
+@tree.command(name="ban_guild", description="Bans a guild from using the bot",guild=discord.Object(id=939479619587952640))
+@app_commands.checks.has_role(939481851939135548)
+async def ban_guild(interaction, guild, reason:str = None):
+    try:
+        guild = await bot.get_guild(guild)
+    except Exception as e:
+        await interaction.response.send_message(f"Failed to get guild, are you sure i'm in that guild? \n \n Error: || {e} ||")
+    
+    try:
+        await guild.owner.send(f"Your guild {guild.name} has been banned from using the bot with reason {reason}. If you believe this is a mistake please contact an administrator in our discord server. https://discord.gg/2w5KSXjhGe")
+    except:
+        pass
+
+    await guild.leave()
+
+    # post it
+
+    r = requests.post("https://api.sblue.tech/bans/guild", data={"guild_id":guild.id, "reason":reason, "token":os.getenv("SBLUE_TECH_API_KEY")})
+
+    await interaction.response.send_message(f"Successfully banned guild {guild.name} with reason {reason}")
+
+@tree.command(name="unban_guild", description="Unbans a guild from using the bot",guild=discord.Object(id=939479619587952640))
+@app_commands.checks.has_role(939481851939135548)
+async def unban_guild(interaction, guild):
+    # post it
+    r = requests.post("https://api.sblue.tech/bans/guild/delete", data={"guild_id":guild.id, "token":os.getenv("SBLUE_TECH_API_KEY")})
+
+    await interaction.response.send_message(f"Successfully unbanned guild {guild.name}")
+
+@tree.command(name="ban_user", description="Bans a user from using the bot",guild=discord.Object(id=939479619587952640))
+@app_commands.checks.has_role(939481851939135548)
+async def ban_user(interaction, user, reason:str = None):
+    try:
+        user = await bot.fetch_user(user)
+    except Exception as e:
+        await interaction.response.send_message(f"Failed to get user. \n \n Error: || {e} ||")
+    
+    try:
+        await user.send(f"You have been banned from using the bot with reason {reason}. If you believe this is a mistake please contact an administrator in our discord server. https://discord.gg/2w5KSXjhGe")
+    except:
+        pass
+
+    # post it
+
+    r = requests.post("https://api.sblue.tech/bans/user", data={"user_id":user.id, "reason":reason, "token":os.getenv("SBLUE_TECH_API_KEY")})
+
+    await interaction.response.send_message(f"Banned user {user.name}#{user.discriminator} from using the bot with reason {reason}")
+
+@tree.command(name="unban_user", description="Unbans a user from using the bot",guild=discord.Object(id=939479619587952640))
+@app_commands.checks.has_role(939481851939135548)
+async def unban_user(interaction, user):
+    # post it
+    r = requests.post("https://api.sblue.tech/bans/user/delete", data={"user_id":user.id, "token":os.getenv("SBLUE_TECH_API_KEY")})
+    await interaction.response.send_message(f"Sucesfully unbanned user {user.name}#{user.discriminator}")
+
+@tree.command(name="ban_service", description="Bans a service from using the bot",guild=discord.Object(id=939479619587952640))
+@app_commands.checks.has_role(939481851939135548)
+async def ban_service(interaction, service, reason:str = None):
+    # post it
+
+    r = requests.post("https://api.sblue.tech/bans/service", data={"service_id":service, "reason":reason, "token":os.getenv("SBLUE_TECH_API_KEY")})
+
+    await interaction.response.send_message(f"Successfully banned service {service} with reason {reason}")
+
+@tree.command(name="unban_service", description="Unbans a service from using the bot",guild=discord.Object(id=939479619587952640))
+@app_commands.checks.has_role(939481851939135548)
+async def unban_service(interaction, service):
+    # post it
+    r = requests.post("https://api.sblue.tech/bans/service/delete", data={"service_id":service, "token":os.getenv("SBLUE_TECH_API_KEY")})
+
+    await interaction.response.send_message(f"Successfully unbanned service {service}")
 
 # quartz stuff
 

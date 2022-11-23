@@ -1,6 +1,7 @@
 import json
 from dataclasses import dataclass
 from enum import Enum
+import datetime
 
 @dataclass
 class Application:
@@ -40,6 +41,27 @@ class User:
     """
     id: int
     applications: json
+
+class Meta:
+    """
+    Metadata for Status Checker
+
+    Parameters
+    ----------
+    None
+
+    Attributes
+    ----------
+    version : str
+        The version of the Status Checker
+    version_name : str
+        The name of the version of the Status Checker
+    start_time : datetime
+        The time the Status Checker was started
+    """
+    version = "0.1.0"
+    version_name = "Finley"
+    start_time = datetime.datetime.now()
 
 class notificationType(Enum):
     """

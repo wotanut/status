@@ -223,8 +223,28 @@ async def status(interaction, service:str = None, bot:discord.Member = None):
         except Exception as e:
             await interaction.response.send_message(f"Unable to get service {service}, are you sure it is a valid URL? \n \n Error: || {e} || ")
 
+@tree.command(name="status",description="Check the status of a service")
+async def status(interaction, service:str = None, bt:discord.Member = None):
+    if service == None and bt == None:
+        await interaction.response.send_message("Please provide a service or a bot to check the status of.")
+        return
+    if service != None:
+        try:
+            r = requests.get(service)
+            await interaction.response.send_message(f"Service {service} responded with status code {r.status_code}")
+        except Exception as e:
+            await interaction.response.send_message(f"Unable to get service {service}, are you sure it is a valid URL? \n \n Error: || {e} || ")
+    if bt != None:
+        if bt.bot == False:
+            await interaction.response.send_message("For privacy reasons, you can only check the status of bots.")
+            return
+        try:
+            await interaction.response.send_message(f"Bot {bt.name} is {bt.status}")
+        except Exception as e:
+            await interaction.response.send_message(f"Unable to get bot {bt.name}, are you sure it is a valid bot? \n \n Error: || {e} || ")
+
 # other commands
-# help, config, subscribe,unsubscribe, status<service>
+# help, config, subscribe,unsubscribe
 
 # contributor commands
 

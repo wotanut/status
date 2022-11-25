@@ -59,7 +59,7 @@ class Meta:
     start_time : datetime
         The time the Status Checker was started
     """
-    version = "0.1.0"
+    version = "2.0.0"
     version_name = "Finley"
     start_time = datetime.datetime.now()
 

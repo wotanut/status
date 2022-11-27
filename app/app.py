@@ -55,17 +55,19 @@ async def on_ready():
     await bot.change_presence(status=discord.Status.online,activity=discord.Activity(type=discord.ActivityType.watching, name="over your bots"))
   
     log_channel = bot.get_channel(949388038260273193)
-    embed = discord.Embed(title="Bot Started", description=f"Succesful bot startup at {datetime.datetime.now()}", color=0x00ff00)
+    embed = discord.Embed(title="Bot Started", description=f"Succesful bot startup at {datetime.datetime.now().strftime('%d/%m/%Y at %H:%M')}", color=0x00ff00)
     await log_channel.send(embed=embed)
 
     # start checking the services
 
-    bot.loop.create_task(app.run(host="0.0.0.0",port=1234))
+    bot.loop.create_task(app.run_task(host="0.0.0.0",port=1234))
     bot.loop.create_task(check_applications())
 
     # sync commands
-    await tree.sync(guild=discord.Object(id=939479619587952640))
+    # await tree.sync(guild=discord.Object(id=939479619587952640))
+    await tree.sync()
 
+    # start the web server
 
 async def check_applications():
     """ Checks the applications every 5 minutes """
@@ -185,7 +187,7 @@ async def on_guild_remove(guild):
     log_channel = bot.get_channel(1042366316897636362)
     embed = discord.Embed(title="I left a guild", description=f"Guild Name: {guild.name} \n Guild ID: {guild.id}", color=discord.Color.red())
 
-@tree.command(name="ping",descrirption="Checks the latency between our servers and discords")
+@tree.command(name="ping",description="Checks the latency between our servers and discords")
 async def ping(interaction):
     await interaction.response.send_message(f"Pong! {round(bot.latency * 1000)}ms")
 
@@ -196,7 +198,7 @@ async def invite(interaction):
     except:
         await interaction.author.send(f"Hi {interaction.author.mention}, I am sorry but I cannot send you a DM. Please enable DMs from server members to use this command")
 
-@tree.comand(name="info",description="Sends information about the bot")
+@tree.command(name="info",description="Sends information about the bot")
 async def info(interaction):
     embed = discord.Embed(title="Status Checker", description="A bot that will notify you when your application goes offline", color=discord.Color.green())
     embed.set_author(name="Concept by Sambot", url="https://github.com/wotanut", icon_url="https://cdn.discordapp.com/avatars/705798778472366131/3dd73a994932174dadc65ff22b1ceb60.webp?size=2048")
@@ -210,18 +212,6 @@ async def info(interaction):
     embed.set_footer(text="Made with ❤️ by Sambot")
 
     await interaction.response.send_message(embed=embed)
-
-@tree.command(name="status",description="Check the status of a service")
-async def status(interaction, service:str = None, bot:discord.Member = None):
-    if service == None and bot == None:
-        await interaction.response.send_message("Please provide a service or a bot to check the status of.")
-        return
-    elif service != None:
-        try:
-            r = requests.get(service)
-            await interaction.response.send_message(f"Service {service} responded with status code {r.status_code}")
-        except Exception as e:
-            await interaction.response.send_message(f"Unable to get service {service}, are you sure it is a valid URL? \n \n Error: || {e} || ")
 
 @tree.command(name="status",description="Check the status of a service")
 async def status(interaction, service:str = None, bt:discord.Member = None):
@@ -242,6 +232,12 @@ async def status(interaction, service:str = None, bt:discord.Member = None):
             await interaction.response.send_message(f"Bot {bt.name} is {bt.status}")
         except Exception as e:
             await interaction.response.send_message(f"Unable to get bot {bt.name}, are you sure it is a valid bot? \n \n Error: || {e} || ")
+
+@tree.command(name="subscribe",description="Subscribe to a service")
+async def subscribe(interaction):
+    select = SelectMenu(custom_id="service_type", options=[SelectOption(label="Web-Website", value="website",emoji=""), SelectOption(label="Bot", value="bot",emoji="<:bot_dev:945077689394536528>"), SelectOption(label="Minecraft Server", value="mc",emoji="<:MC:1044914771612405760>")],placeholder="Select a service type")
+    await interaction.response.send_message("Let's get started, first of all, please select what type of service you're subscribing too", components=[select])
+
 
 # other commands
 # help, config, subscribe,unsubscribe
@@ -265,7 +261,7 @@ async def debug(interaction):
 
 @tree.command(name="ban_guild", description="Bans a guild from using the bot",guild=discord.Object(id=939479619587952640))
 @app_commands.checks.has_role(939481851939135548)
-async def ban_guild(interaction, guild, reason:str = None):
+async def ban_guild(interaction, guild:int, reason:str = None):
     try:
         guild = await bot.get_guild(guild)
     except Exception as e:
@@ -286,7 +282,7 @@ async def ban_guild(interaction, guild, reason:str = None):
 
 @tree.command(name="unban_guild", description="Unbans a guild from using the bot",guild=discord.Object(id=939479619587952640))
 @app_commands.checks.has_role(939481851939135548)
-async def unban_guild(interaction, guild):
+async def unban_guild(interaction, guild:int):
     # post it
     r = requests.post("https://api.sblue.tech/bans/guild/delete", data={"guild_id":guild.id, "token":os.getenv("SBLUE_TECH_API_KEY")})
 
@@ -294,7 +290,7 @@ async def unban_guild(interaction, guild):
 
 @tree.command(name="ban_user", description="Bans a user from using the bot",guild=discord.Object(id=939479619587952640))
 @app_commands.checks.has_role(939481851939135548)
-async def ban_user(interaction, user, reason:str = None):
+async def ban_user(interaction, user:int, reason:str = None):
     try:
         user = await bot.fetch_user(user)
     except Exception as e:
@@ -313,14 +309,14 @@ async def ban_user(interaction, user, reason:str = None):
 
 @tree.command(name="unban_user", description="Unbans a user from using the bot",guild=discord.Object(id=939479619587952640))
 @app_commands.checks.has_role(939481851939135548)
-async def unban_user(interaction, user):
+async def unban_user(interaction, user:int):
     # post it
     r = requests.post("https://api.sblue.tech/bans/user/delete", data={"user_id":user.id, "token":os.getenv("SBLUE_TECH_API_KEY")})
     await interaction.response.send_message(f"Sucesfully unbanned user {user.name}#{user.discriminator}")
 
 @tree.command(name="ban_service", description="Bans a service from using the bot",guild=discord.Object(id=939479619587952640))
 @app_commands.checks.has_role(939481851939135548)
-async def ban_service(interaction, service, reason:str = None):
+async def ban_service(interaction, service:str, reason:str = None):
     # post it
 
     r = requests.post("https://api.sblue.tech/bans/service", data={"service_id":service, "reason":reason, "token":os.getenv("SBLUE_TECH_API_KEY")})
@@ -329,7 +325,7 @@ async def ban_service(interaction, service, reason:str = None):
 
 @tree.command(name="unban_service", description="Unbans a service from using the bot",guild=discord.Object(id=939479619587952640))
 @app_commands.checks.has_role(939481851939135548)
-async def unban_service(interaction, service):
+async def unban_service(interaction, service:str):
     # post it
     r = requests.post("https://api.sblue.tech/bans/service/delete", data={"service_id":service, "token":os.getenv("SBLUE_TECH_API_KEY")})
 
@@ -386,9 +382,12 @@ async def remove_from_db(id):
 # redirects
 
 @app.route("/discord")
-async def discord():
+async def discord_server():
     return redirect("https://discord.gg/2w5KSXjhGe")
 
 @app.route("/youtube")
 async def youtube():
     return redirect("https://www.youtube.com/channel/UCIVkp1F5JSyE0IKALyPW5sg")
+
+if __name__ == "__main__":
+    bot.run(os.environ["DISCORD_TOKEN"])

@@ -1,5 +1,5 @@
-from data import *
-from driver import *
+from .data import *
+from .driver import *
 
 # TODO: MORE METHODS AND IMPROVE EXISTING METHODS
 
@@ -59,8 +59,8 @@ class Database():
         -------
         None
         """
-        self.applications = Driver("Applications","id TEXT PRIMARY KEY, type NVARCHAR(MAX), notifications NVARCHAR(MAX)")
-        self.users = Driver("Users", "id TEXT PRIMARY KEY, applications NVARCHAR(MAX)")
+        self.applications = Driver("Applications","id TEXT PRIMARY KEY, type JSON, notifications JSON")
+        self.users = Driver("Users", "id TEXT PRIMARY KEY, applications JSON")
 
     def __add_json(self,to_update:json,update:json):
             """

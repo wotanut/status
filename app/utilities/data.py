@@ -63,6 +63,10 @@ class Meta:
     version_name = "Finley"
     start_time = datetime.datetime.now()
 
+@dataclass
+class notification():
+    pass
+
 class notificationType(Enum):
     """
     Supported types of notifications

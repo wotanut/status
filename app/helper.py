@@ -136,7 +136,7 @@ class Helper():
 
         pass
 
-    async def discord_direct_message(self,data,bot):
+    async def discord_direct_message(self,data,bot=discord.Client):
         """
         Sends a direct message to the user on discord
         """
@@ -147,14 +147,14 @@ class Helper():
 
         pass
 
-    async def discord_server(self,data,bot):
+    async def discord_server(self,data,bot=discord.Client):
         """
         Sends a discord message to the server
         """
 
         pass
 
-    async def send_notification(self,notification:json,bot=discord.Bot):
+    async def send_notification(self,notification:json,bot=discord.Client):
         """
         Sends the notification to the user
 
@@ -188,7 +188,7 @@ class Helper():
 
         return True
 
-    async def check_applications(self,bot: discord.Bot):
+    async def check_applications(self,bot: discord.Client):
         """
         Checks all the applications in the database
 

@@ -23,10 +23,10 @@ import re
 
 # local imports
 
-from utilities.data import Application, User, Meta
+from utilities.data import Application, User, Meta, notificationType
 from utilities.database import Database
-from utilities.dropdown_views import *
 from helper import Helper
+from modals.modals import *
 
 # general configuration
 
@@ -240,65 +240,6 @@ async def status(interaction : discord.Interaction, service:str = None, bt:disco
 
 @tree.command(name="subscribe",description="Subscribe to a service")
 async def subscribe(interaction : discord.Interaction):
-
-    class Setup(ui.Modal,title="Setup"):
-        # ServiceType = ui.Select(placeholder="Select a service type",min_values=1,max_values=1, options=[
-        #     discord.SelectOption(label="Web Server", value="website",emoji="<:website:1046716159682166815>"),
-        #     discord.SelectOption(label="Bot", value="bot",emoji="<:bot_dev:945077689394536528>"),
-        #     discord.SelectOption(label="Minecraft Server", value="mc",emoji="<:MC:1044914771612405760>"),
-        # ])
-        # TODO: As soon as discord supports select menus in modals, uncomment this
-
-        ServiceType = ui.TextInput(label="Service Type (website,bot,mc)",placeholder="website",required=True)
-        ServiceURL = ui.TextInput(label="Service URL (websites and mc only)",placeholder="https://sblue.tech/uptime",required=False)
-        Bot = ui.TextInput(label="Bot (bots only) (bot_name)#(discriminator)",placeholder="Status Checker#2469",required=False)
-
-
-        # TODO: Actually sending the damn notification
-
-        async def on_submit(self, interaction: discord.Interaction):
-            if self.ServiceType.value.lower() == "website":
-                if self.ServiceURL.value == None:
-                    await interaction.response.send_message("Your service type is website but you did not provide a service URL. Please try again.")
-                    return
-                regex = re.search(r"(http|https)://[a-zA-Z0-9./]+", self.ServiceURL.value)
-                if regex == None:
-                    await interaction.response.send_message("Your service URL is invalid. Please try again.")
-                    return
-                
-                Database.add_website(interaction.user.id, self.ServiceURL.value,{})
-
-                
-
-                await interaction.response.send_message("Subscribed to website " + self.ServiceURL.value)
-
-            elif self.ServiceType.value.lower() == "mc":
-                if self.ServiceURL.value == None:
-                    await interaction.response.send_message("Your service type is minecraft but you did not provide a service URL. Please try again.")
-                    return
-                regex = re.search(r"(http|https)://[a-zA-Z0-9./]+", self.ServiceURL.value)
-                if regex == None:
-                    await interaction.response.send_message("Your service URL is invalid. Please try again.")
-                    return
-                
-                Database.add_minecraft(interaction.user.id, self.ServiceURL.value,{})
-
-
-                await interaction.response.send_message("Subscribed to minecraft server " + self.ServiceURL.value)
-            
-            elif self.ServiceType.value.lower() == "bot":
-                if self.Bot.value == None:
-                    await interaction.response.send_message("Your service type is bot but you did not provide a bot. Please try again.")
-                    return
-                regex = re.search(r"[a-zA-Z0-9]+#[0-9]{4}", self.Bot.value)
-                if regex == None:
-                    await interaction.response.send_message("Your bot is not. Please try again.")
-                    return
-                
-                Database.add_bot(interaction.user.id, self.Bot.value,{})
-
-                await interaction.response.send_message("Subscribed to bot " + self.Bot.value)
-    
     await interaction.response.send_modal(Setup())
 
 # other commands

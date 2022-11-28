@@ -6,6 +6,7 @@ import os
 import requests
 import json
 import discord
+from discord import ui
 import mcstatus
 
 # local imports

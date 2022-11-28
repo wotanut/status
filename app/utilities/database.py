@@ -44,6 +44,25 @@ class Database():
         Removes the notification from the application
     update_notification(id:int,notification:json) -> bool
         Updates the notification from the user
+    add_website(id:int,website:json) -> bool
+        Adds a website to the database
+    add_bot(id:int,bot:json) -> bool
+        Adds a bot to the database
+    add_minecraft(id:int,minecraft:json) -> bool
+        Adds a minecraft server to the database
+
+    TODO: Add methods for these
+    
+
+    remove_website
+    update_website
+
+    remove_bot
+    update_bot
+
+    remove_minecraft
+    update_minecraft
+        
 
     
     """
@@ -351,3 +370,66 @@ class Database():
             return True
         else:
             raise Exception("User not in database")
+    
+    async def add_website(self,url:str,user:int,notifications:json):
+        """
+        Adds the website to the database
+
+        Parameters
+        ----------
+        url : str
+            The url of the website to add
+        user : int
+            The id of the user to add the website to
+        notifications : json
+            The notifications of the website
+        
+        Returns
+        -------
+        bool
+            True if the website was added, Exception raised if not
+        """
+        
+        pass
+
+    async def add_minecraft(self, url:str, user:int, notifications:json):
+        """
+        Adds the minecraft server to the database
+
+        Parameters
+        ----------
+        url : str
+            The url of the minecraft server to add
+        user : int
+            The id of the user to add the minecraft server to
+        notifications : json
+            The notifications of the minecraft server
+        
+        Returns
+        -------
+        bool
+            True if the minecraft server was added, Exception raised if not
+        """
+        
+        pass
+
+    async def add_bot(self, id:int, user:int, notifications:json):
+        """
+        Adds the bot to the database
+
+        Parameters
+        ----------
+        id : int
+            The id of the bot to add
+        user : int
+            The id of the user to add the bot to
+        notifications : json
+            The notifications of the bot
+        
+        Returns
+        -------
+        bool
+            True if the bot was added, Exception raised if not
+        """
+        
+        pass

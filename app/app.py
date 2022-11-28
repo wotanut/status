@@ -3,7 +3,8 @@
 from distutils.cmd import Command
 import discord
 from discord.ext import commands
-from discord import app_commands, SelectMenu, SelectOption
+from discord import app_commands, SelectOption
+import discord.ui as ui
 
 # quart imports
 
@@ -18,11 +19,13 @@ from dotenv import load_dotenv
 import os
 import asyncio
 import datetime
+import re
 
 # local imports
 
 from utilities.data import Application, User, Meta
 from utilities.database import Database
+from utilities.dropdown_views import *
 from helper import Helper
 
 # general configuration
@@ -192,29 +195,31 @@ async def ping(interaction):
     await interaction.response.send_message(f"Pong! {round(bot.latency * 1000)}ms")
 
 @tree.command(name="invite",description="Sends the invite link for the bot")
-async def invite(interaction):
+async def invite(interaction : discord.Interaction):
     try:
-        await interaction.author.send(f"Hey there {interaction.author.mention}. Here is the invite link you asked for: https://discord.com/api/oauth2/authorize?client_id=845943691386290198&permissions=380105055296&scope=bot%20applications.commands")
+        await interaction.user.send(f"Hey there {interaction.user.mention}. Here is the invite link you asked for: https://discord.com/api/oauth2/authorize?client_id=845943691386290198&permissions=380105055296&scope=bot%20applications.commands")
+        await interaction.response.send_message("I have sent you a DM with the invite link", ephemeral=True)
     except:
-        await interaction.author.send(f"Hi {interaction.author.mention}, I am sorry but I cannot send you a DM. Please enable DMs from server members to use this command")
+        await interaction.user.send(f"Hi {interaction.user.mention}, I am sorry but I cannot send you a DM. Please enable DMs from server members to use this command")
 
 @tree.command(name="info",description="Sends information about the bot")
 async def info(interaction):
     embed = discord.Embed(title="Status Checker", description="A bot that will notify you when your application goes offline", color=discord.Color.green())
     embed.set_author(name="Concept by Sambot", url="https://github.com/wotanut", icon_url="https://cdn.discordapp.com/avatars/705798778472366131/3dd73a994932174dadc65ff22b1ceb60.webp?size=2048")
-    embed.add_field(name="What is this?", description="Status Checker is an open source bot that notifies you when your application goes offline or becomes unresponsive.")
-    embed.add_field(name="How do I use it?", description="Each user has an \"account\" on the bot. For each user they can subscribe to an application and can send notifications to themselves or to a discord guild if they have manage server permissions in that guild. To subscribe to an application run `/subscribe` and to unsubscribe run `/unsubscribe`")
-    embed.add_field(name="Sounds cool, you mentioned open source, how can I contribute?", description="First of all, thanks for your interest in contributing to this project. You can check out the source code on (GitHub)[https://github.com/wotanut] where there is a more detailed contributing guide :)")
-    embed.add_field(name="HELPPP", description="If you need help you can join the [Support Server](https://discord.gg/2w5KSXjhGe)")
-    embed.add_field(name="WhErE iS yOuR pRiVaCy pOlIcY", description="We're a discord bot, I can't belive we need a privacy policy....but that's [here](http://bit.ly/SC-Privacy-Policy) and our TOS is [here](http://bit.ly/SC-TOS)")
-    embed.add_field(name="I have a suggestion / bug to report", description="You can join the [Support Server](https://discord.gg/2w5KSXjhGe) and report it there")
-    embed.add_field(name="How can I support this project?", description="Thanks for your interest in supporting this project. You can support this project by tipping me on [Ko-Fi](https://ko-fi.com/wotanut) or by starring the [GitHub repository](https://github.com/wotanut). Furthermore, joining the [Discord Server](https://discord.gg/2w5KSXjhGe) is a great way to support the project as well as getting help with the bot")
+    embed.add_field(name="What is this?", value="Status Checker is an open source bot that notifies you when your application goes offline or becomes unresponsive.")
+    embed.add_field(name="How do I use it?", value="Each user has an \"account\" on the bot. For each user they can subscribe to an application and can send notifications to themselves or to a discord guild if they have manage server permissions in that guild. To subscribe to an application run `/subscribe` and to unsubscribe run `/unsubscribe`")
+    embed.add_field(name="Sounds cool, you mentioned open source, how can I contribute?", value="First of all, thanks for your interest in contributing to this project. You can check out the source code on [GitHub](https://github.com/wotanut) where there is a more detailed contributing guide :)")
+    embed.add_field(name="HELPPP", value="If you need help you can join the [Support Server](https://discord.gg/2w5KSXjhGe)")
+    embed.add_field(name="WhErE iS yOuR pRiVaCy pOlIcY", value="We're a discord bot, I can't belive we need a privacy policy....but that's [here](http://bit.ly/SC-Privacy-Policy) and our TOS is [here](http://bit.ly/SC-TOS)")
+    embed.add_field(name="I have a suggestion / bug to report", value="You can join the [Support Server](https://discord.gg/2w5KSXjhGe) and report it there or on the issues tab on [GitHub](https://github.com/wotanut/status)")
+    embed.add_field(name="How can I support this project?", value="Thanks for your interest in supporting this project. You can support this project by tipping me on [Ko-Fi](https://ko-fi.com/wotanut) or by starring the [GitHub repository](https://github.com/wotanut). Furthermore, joining the [Discord Server](https://discord.gg/2w5KSXjhGe) is a great way to support the project as well as getting help with the bot")
     embed.set_footer(text="Made with ❤️ by Sambot")
 
     await interaction.response.send_message(embed=embed)
 
 @tree.command(name="status",description="Check the status of a service")
-async def status(interaction, service:str = None, bt:discord.Member = None):
+async def status(interaction : discord.Interaction, service:str = None, bt:discord.Member = None):
+    #BUG: shows up as bt in discord when it should show up as bot
     if service == None and bt == None:
         await interaction.response.send_message("Please provide a service or a bot to check the status of.")
         return
@@ -229,15 +234,72 @@ async def status(interaction, service:str = None, bt:discord.Member = None):
             await interaction.response.send_message("For privacy reasons, you can only check the status of bots.")
             return
         try:
-            await interaction.response.send_message(f"Bot {bt.name} is {bt.status}")
+            await interaction.response.send_message(f"Bot {bt.name} is {bt.status}") # BUG: Shows up as offline
         except Exception as e:
             await interaction.response.send_message(f"Unable to get bot {bt.name}, are you sure it is a valid bot? \n \n Error: || {e} || ")
 
 @tree.command(name="subscribe",description="Subscribe to a service")
-async def subscribe(interaction):
-    select = SelectMenu(custom_id="service_type", options=[SelectOption(label="Web-Website", value="website",emoji=""), SelectOption(label="Bot", value="bot",emoji="<:bot_dev:945077689394536528>"), SelectOption(label="Minecraft Server", value="mc",emoji="<:MC:1044914771612405760>")],placeholder="Select a service type")
-    await interaction.response.send_message("Let's get started, first of all, please select what type of service you're subscribing too", components=[select])
+async def subscribe(interaction : discord.Interaction):
 
+    class Setup(ui.Modal,title="Setup"):
+        # ServiceType = ui.Select(placeholder="Select a service type",min_values=1,max_values=1, options=[
+        #     discord.SelectOption(label="Web Server", value="website",emoji="<:website:1046716159682166815>"),
+        #     discord.SelectOption(label="Bot", value="bot",emoji="<:bot_dev:945077689394536528>"),
+        #     discord.SelectOption(label="Minecraft Server", value="mc",emoji="<:MC:1044914771612405760>"),
+        # ])
+        # TODO: As soon as discord supports select menus in modals, uncomment this
+
+        ServiceType = ui.TextInput(label="Service Type (website,bot,mc)",placeholder="website",required=True)
+        ServiceURL = ui.TextInput(label="Service URL (websites and mc only)",placeholder="https://sblue.tech/uptime",required=False)
+        Bot = ui.TextInput(label="Bot (bots only) (bot_name)#(discriminator)",placeholder="Status Checker#2469",required=False)
+
+
+        # TODO: Actually sending the damn notification
+
+        async def on_submit(self, interaction: discord.Interaction):
+            if self.ServiceType.value.lower() == "website":
+                if self.ServiceURL.value == None:
+                    await interaction.response.send_message("Your service type is website but you did not provide a service URL. Please try again.")
+                    return
+                regex = re.search(r"(http|https)://[a-zA-Z0-9./]+", self.ServiceURL.value)
+                if regex == None:
+                    await interaction.response.send_message("Your service URL is invalid. Please try again.")
+                    return
+                
+                Database.add_website(interaction.user.id, self.ServiceURL.value,{})
+
+                
+
+                await interaction.response.send_message("Subscribed to website " + self.ServiceURL.value)
+
+            elif self.ServiceType.value.lower() == "mc":
+                if self.ServiceURL.value == None:
+                    await interaction.response.send_message("Your service type is minecraft but you did not provide a service URL. Please try again.")
+                    return
+                regex = re.search(r"(http|https)://[a-zA-Z0-9./]+", self.ServiceURL.value)
+                if regex == None:
+                    await interaction.response.send_message("Your service URL is invalid. Please try again.")
+                    return
+                
+                Database.add_minecraft(interaction.user.id, self.ServiceURL.value,{})
+
+
+                await interaction.response.send_message("Subscribed to minecraft server " + self.ServiceURL.value)
+            
+            elif self.ServiceType.value.lower() == "bot":
+                if self.Bot.value == None:
+                    await interaction.response.send_message("Your service type is bot but you did not provide a bot. Please try again.")
+                    return
+                regex = re.search(r"[a-zA-Z0-9]+#[0-9]{4}", self.Bot.value)
+                if regex == None:
+                    await interaction.response.send_message("Your bot is not. Please try again.")
+                    return
+                
+                Database.add_bot(interaction.user.id, self.Bot.value,{})
+
+                await interaction.response.send_message("Subscribed to bot " + self.Bot.value)
+    
+    await interaction.response.send_modal(Setup())
 
 # other commands
 # help, config, subscribe,unsubscribe

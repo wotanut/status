@@ -1,7 +1,7 @@
 <div align="center">
     <h1>Status Checker</h1>
     <p>Advanced notifications of service downtime</p>
-    <a href="https://discord.gg/2w5KSXjhGe"><img alt="Discord" src="https://img.shields.io/discord/939479619587952640?logo=discord&style=for-the-badge"></a>  <a href="https://github.com/wotanut"><img alt="GitHub followers" src="https://img.shields.io/github/followers/wotanut?logo=github&style=for-the-badge"></a>
+    <a href="https://discord.gg/2w5KSXjhGe"><img alt="Discord" src="https://img.shields.io/discord/939479619587952640?logo=discord&style=for-the-badge"></a>  <a href="https://github.com/wotanut"><img alt="GitHub followers" src="https://img.shields.io/github/followers/wotanut?logo=github&style=for-the-badge"></a> <a href=" https://github.com/sponsors/wotanut"><img alt="GitHub Sponsors" src="https://img.shields.io/github/sponsors/wotanut?style=for-the-badge"></a>
 </div>
 
 <br>
@@ -35,11 +35,12 @@ Status Checker aims to solve this problem. With just a few commands, you can hav
     <h2> Supporting this project </h2>
     <p> If you would like to suport this project then please consider the following</p>
     <ul>
-      <li> <a href="https://discord.gg/2w5KSXjhGe"> Joining the discord server</a>
-      <li> <a href="https://www.youtube.com/@wotanut1"> Following me on YouTube</a>
-      <li> <a href="#"> Starring this repository</a>
-      <li> <a href="https://github.com/wotanut"> Following me on GitHub</a>
-      <br>
-      <a href='https://ko-fi.com/K3K4EPV8X' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+    <li> <a href="https://discord.gg/2w5KSXjhGe"> Joining the discord server</a>
+    <li> <a href="https://www.youtube.com/@wotanut1"> Following me on YouTube</a>
+    <li> <a href="#"> Starring this repository</a>
+    <li> <a href="https://github.com/wotanut"> Following me on GitHub</a>
+    <br>
+    <a href='https://ko-fi.com/K3K4EPV8X' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
     </ul>
 </div>
+</body>

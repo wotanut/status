@@ -1,8 +1,7 @@
 from .data import *
 from .driver import *
 
-# TODO: MORE METHODS AND IMPROVE EXISTING METHODS
-
+# TODO: this file needs rewriting
 class Database():
     """
     Database class
@@ -80,44 +79,6 @@ class Database():
         """
         self.applications = Driver("Applications","id TEXT PRIMARY KEY, type JSON, notifications JSON")
         self.users = Driver("Users", "id TEXT PRIMARY KEY, applications JSON")
-
-    def __add_json(self,to_update:json,update:json):
-            """
-            Adds something to a json object
-
-            Parameters
-            ----------
-            to_update : json
-                The json object to update
-            update : json
-                The json object to update with
-            
-            Returns
-            -------
-            json
-                The updated json object
-            """
-            for key in update:
-                to_update[key] = update[key]
-            return to_update
-        
-    def __remove_json(self,to_remove:json):
-        """
-        Removes a specified key from a json object
-
-        Parameters
-        ----------
-        to_remove : json
-            The json object to remove the key from
-        
-        Returns
-        -------
-        json
-            The updated json object
-        """
-        for key in to_remove:
-            del to_remove[key]
-        return to_remove
 
     def get_all_applications(self):
         """

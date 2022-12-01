@@ -9,7 +9,7 @@ import discord.ui as ui
 # quart imports
 
 import quart
-from quart import Quart, jsonify, render_template, redirect
+from quart import Quart, jsonify, render_template, redirect, Blueprint
 from quart_discord import DiscordOAuth2Session, requires_authorization
 
 # other imports
@@ -27,6 +27,10 @@ from utilities.data import Application, User, Meta, notificationType
 from utilities.database import Database
 from helper import Helper
 from modals.modals import *
+
+from blueprints.api import api
+from blueprints.redirects import redirects
+from blueprints.routing import routing
 
 # general configuration
 
@@ -49,6 +53,11 @@ app.config['DISCORD_CLIENT_ID'] = os.getenv('DISCORD_CLIENT_ID')
 app.config['DISCORD_CLIENT_SECRET'] = os.getenv('DISCORD_CLIENT_SECRET')
 app.config['DISCORD_REDIRECT_URI'] = "os.getenv('DISCORD_REDIRECT_URI')"
 oauth = DiscordOAuth2Session(app)
+
+app.register_blueprint(api)
+app.register_blueprint(redirects)
+app.register_blueprint(routing)
+
 
 # bot stuff
 
@@ -333,64 +342,6 @@ async def unban_service(interaction, service:str):
     r = requests.post("https://api.sblue.tech/bans/service/delete", data={"service_id":service, "token":os.getenv("SBLUE_TECH_API_KEY")})
 
     await interaction.response.send_message(f"Successfully unbanned service {service}")
-
-# quartz stuff
-
-
-app = Quart(__name__)
-
-# routing
- 
-@app.route("/")
-async def index():
-    return await render_template("index.html")
-
-@app.route("/docs")
-async def docs():
-    return await render_template("docs.html")
-
-@app.route("/about")
-async def about():
-    return await render_template("about.html")
-
-@app.route("/dashboard")
-async def dashboard():
-    return await render_template("dashboard.html")
-
-@app.route("/privacy")
-async def privacy():
-    return await render_template("privacy.html")
-
-# api
-
-@app.route("/api")
-async def api():
-    return await jsonify({"status": "ok"})
-
-@app.route("/api/get_from_db/<id>")
-async def get_from_db(id):
-    """ Get's an application from the database and returns a json object of the stats"""
-    return await jsonify({"status": "ok"})
-
-@app.route("/api/add_to_db/<id>")
-async def add_to_db(id):
-    """ Adds an application to the database """
-    return await jsonify({"status": "ok"})
-
-@app.route("/api/remove_from_db/<id>")
-async def remove_from_db(id):
-    """ Removes an application from the database """
-    return await jsonify({"status": "ok"})
-
-# redirects
-
-@app.route("/discord")
-async def discord_server():
-    return redirect("https://discord.gg/2w5KSXjhGe")
-
-@app.route("/youtube")
-async def youtube():
-    return redirect("https://www.youtube.com/channel/UCIVkp1F5JSyE0IKALyPW5sg")
 
 if __name__ == "__main__":
     bot.run(os.environ["DISCORD_TOKEN"])

@@ -2,33 +2,27 @@
 
 from distutils.cmd import Command
 import discord
-from discord.ext import commands, tasks
-from discord import app_commands, SelectOption
+from discord.ext import commands
 import discord.ui as ui
 
 # quart imports
 
-import quart
-from quart import Quart, jsonify, render_template, redirect, Blueprint
-from quart_discord import DiscordOAuth2Session, requires_authorization
+from quart import Quart
+from quart_discord import DiscordOAuth2Session
 
 # other imports
 
-import requests
 from dotenv import load_dotenv
 import os
 import asyncio
 import datetime
-import re
 from typing import List
 import traceback
 
 # local imports
 
-from utilities.data import Application, User, Meta, notificationType
-from utilities.database import Database
+from utilities.data import Meta
 from helper import Helper
-from modals.modals import *
 
 # from blueprints.api import api
 from blueprints.redirects import redirects
@@ -118,8 +112,12 @@ async def on_command_error(ctx,error):
     if isinstance(error, commands.CommandNotFound):
         return
 
-    if ctx.guild is None:
-        print(error)
+    if isinstance(error, commands.MissingPermissions or commands.MissingRole):
+        await ctx.send("You don't have the permissions to do that!")
+        return
+    
+    if isinstance(error, commands.BotMissingPermissions):
+        await ctx.send("I don't have the permissions to do that!")
         return
 
     log_channel = bot.get_channel(949388038260273193)

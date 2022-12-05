@@ -90,9 +90,9 @@ class Driver():
             The where statement to be used, defualts to None
         """
         if where:
-            return self.conn.execute(f"SELECT {columns} FROM {self.table_name} WHERE {where}")
+            return self.conn.execute(f"SELECT {columns} FROM {self.table_name} WHERE {where}").fetchall()
         else:
-            return self.conn.execute(f"SELECT {columns} FROM {self.table_name}")
+            return self.conn.execute(f"SELECT {columns} FROM {self.table_name}").fetchall()
 
     def update(self,where,columns=[],values=[]):
         """

@@ -49,20 +49,6 @@ class Database():
         Adds a bot to the database
     add_minecraft(id:int,minecraft:json) -> bool
         Adds a minecraft server to the database
-
-    TODO: Add methods for these
-    
-
-    remove_website
-    update_website
-
-    remove_bot
-    update_bot
-
-    remove_minecraft
-    update_minecraft
-        
-
     
     """
     def __init__(self):

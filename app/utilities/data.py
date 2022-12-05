@@ -64,8 +64,26 @@ class Meta:
     start_time = datetime.datetime.now()
 
 @dataclass
-class notification():
-    pass
+class Notification():
+    """
+    Parameters
+    ----------
+    type : str
+        The type of notification
+    target : str
+        The target of the notification
+    Payload : str
+        The payload of the notification
+
+    
+    Returns
+    -------
+    notification
+        The notification
+    """
+    type: str
+    target: str
+    payload: str
 
 class notificationType(Enum):
     """

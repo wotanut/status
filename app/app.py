@@ -43,23 +43,9 @@ cogs = [
 
 # discord specific configuration
 
-class StatusChecker(commands.Bot):
-    def __init__(self, *, intents: discord.Intents,initial_extensions: List[str]):
-        super().__init__(command_prefix=commands.when_mentioned,intents=intents)
-        self.initial_extensions = initial_extensions
-
-    async def setup_hook(self):
-        for extension in self.initial_extensions:
-            try:
-                await self.load_extension(extension)
-            except Exception as e:
-                print(f"Failed to load extension {extension}.")
-                traceback.print_exc()
-
-
 intents = discord.Intents.default()
-discord.Intents.presences = True
-bot = StatusChecker(intents=intents, initial_extensions=cogs)
+intents.presences = True
+bot = commands.Bot(command_prefix=commands.when_mentioned,intents=intents)
 
 # quart specific  configuration
 
@@ -82,6 +68,14 @@ async def on_ready():
     # on ready we will start the web server, set the bot's status and log the uptime as well as a few other admin things
     await bot.change_presence(status=discord.Status.online,activity=discord.Activity(type=discord.ActivityType.watching, name="over your bots"))
   
+    # load the cogs
+    for cog in cogs:
+        try:
+            await bot.load_extension(cog)
+        except Exception as e:
+            print(f"Failed to load cog {cog}: {e}")
+            traceback.print_exc()
+
     log_channel = bot.get_channel(949388038260273193)
     embed = discord.Embed(title="Bot Started", description=f"Succesful bot startup at {datetime.datetime.now().strftime('%d/%m/%Y at %H:%M')}", color=0x00ff00)
     await log_channel.send(embed=embed)

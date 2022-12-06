@@ -1,18 +1,17 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-import os
-import requests
 import datetime
+import psutil
 
 # local imports
 
-from ..utilities.data import Meta
+import utilities.data as data
 
 class misc(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
-        self.meta = Meta()
+        self.meta = data.Meta()
 
     @app_commands.command(name="ping",description="Checks the latency between our servers and discords")
     async def ping(self, interaction : discord.Interaction):
@@ -50,6 +49,8 @@ class misc(commands.Cog):
         embed.add_field(name="Bot Latency", value=f"{round(self.bot.latency * 1000)}ms")
         embed.add_field(name="Bot Uptime", value=f"{datetime.datetime.now() - self.meta.start_time}")
         embed.add_field(name="Bot Version", value=f"{self.meta.version} - {self.meta.version_name}")
+        embed.add_field(name="Bot Memory Usage", value=f"{psutil.Process().memory_info().rss / 1024 ** 2} MB")
+        embed.add_field(name="Bot CPU Usage", value=f"{psutil.cpu_percent()}%")
 
         await interaction.response.send_message(embed=embed)    
 

@@ -54,6 +54,8 @@ class Setup(ui.Modal,title="Setup"):
         NotificationType = ui.TextInput(label="Notification Type",placeholder="dm",required=True)
         NotificationTarget = ui.TextInput(label="Notification Target",placeholder="845943691386290198",required=False)
         NotificationPaylod = ui.TextInput(label="Notification Payload",placeholder="Your application is down!",required=True)
+
+        # TODO: Proper functionality for this
     
         
 

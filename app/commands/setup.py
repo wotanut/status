@@ -4,7 +4,8 @@ from discord.ext import commands
 import requests
 
 # local imports
-import modals.modals as modals
+import views.modals as modals
+import views.dropdowns as dropdowns
 
 class configuration(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
@@ -16,8 +17,7 @@ class configuration(commands.Cog):
 
     @app_commands.command(name="unsubscribe",description="Unsubscribe from a service")
     async def unsubscribe(self, interaction : discord.Interaction):
-        # TODO: Functionality to unsubscribe from a service
-        await interaction.response.send_message("You have been unsubscribed from all services.")
+        await interaction.response.send_message("Please select a service to unsubscribe from.", view=dropdowns.unSubscribeView())
     
     @app_commands.command(name="config", description="View your configuration")
     async def config(self, interaction : discord.Interaction):

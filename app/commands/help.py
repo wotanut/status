@@ -1,9 +1,9 @@
-# TODO: Help command
-
 import discord
 from discord.ext import commands
 from discord import app_commands
+
  # NOTE: This class does not belong in the modals folder as it's only use is here. Furthermore it includes help command information and so is more relevant here.
+
 class Dropdown(discord.ui.Select):
     def __init__(self):
 
@@ -47,6 +47,8 @@ class DropdownView(discord.ui.View):
 
         # Adds the dropdown to our view object.
         self.add_item(Dropdown())
+
+# NOTE: This command can be better. It could be dynamic. However, I am not sure how to do that yet. I will look into it in the future.
 class Help(commands.Cog):
     def __init__(self, bot : commands.Bot) -> None:
         self.bot = bot

@@ -45,6 +45,7 @@ cogs = [
 
 intents = discord.Intents.default()
 intents.presences = True
+intents.members = True
 bot = commands.Bot(command_prefix=commands.when_mentioned,intents=intents)
 
 # quart specific  configuration

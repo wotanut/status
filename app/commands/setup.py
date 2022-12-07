@@ -32,7 +32,15 @@ class configuration(commands.Cog):
                 await interaction.response.send_message("For privacy reasons, you can only check the status of bots.")
                 return
             try:
-                await interaction.response.send_message(f"Bot {bt.mention} is {bt.status}") # BUG: bot always shows up as offline
+                userstatus = interaction.guild.get_member(bt.id).status
+                if userstatus == discord.Status.online:
+                    await interaction.response.send_message(f"<:online:949589635061915648> Bot {bt.mention} is online")
+                elif userstatus == discord.Status.idle:
+                    await interaction.response.send_message(f"<:idle:949589635087081503> Bot {bt.mention} is idle")
+                elif userstatus == discord.Status.dnd:
+                    await interaction.response.send_message(f"<:dnd:949589635091284019> Bot {bt.mention} is dnd")
+                else:
+                    await interaction.response.send_message(f"<:offline:949589634898350101> Bot {bt.mention} is offline")
             except Exception as e:
                 await interaction.response.send_message(f"Unable to get bot {bt.name}, are you sure it is a valid bot? \n \n Error: || {e} || ")
 

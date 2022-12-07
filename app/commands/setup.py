@@ -21,8 +21,7 @@ class configuration(commands.Cog):
     
     @app_commands.command(name="config", description="View your configuration")
     async def config(self, interaction : discord.Interaction):
-        # TODO: Functionality for viewing configuration
-        await interaction.response.send_message("You have no configuration.")
+        await interaction.response.send_message("Please select a service to view the configuration of.", view=dropdowns.configView())
 
 async def setup(bot: commands.Bot) -> None:
   await bot.add_cog(configuration(bot))

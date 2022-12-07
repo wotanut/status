@@ -45,12 +45,25 @@ class misc(commands.Cog):
 
     @app_commands.command(name="debug", description="Sends debug information for the bot")
     async def debug(self, interaction : discord.Interaction):
+
+        uptime = datetime.datetime.now() - self.meta.start_time
+
+        if uptime.days > 0:
+            uptime_str = f"{uptime.days} days, {uptime.seconds // 3600} hours, {uptime.seconds // 60 % 60} minutes, {uptime.seconds % 60} seconds"
+        elif uptime.seconds // 3600 > 0:
+            uptime_str = f"{uptime.seconds // 3600} hours, {uptime.seconds // 60 % 60} minutes, {uptime.seconds % 60} seconds"
+        elif uptime.seconds // 60 % 60 > 0:
+            uptime_str = f"{uptime.seconds // 60 % 60} minutes, {uptime.seconds % 60} seconds"
+        else:
+            uptime_str = f"{uptime.seconds % 60} seconds"
+
+
         embed = discord.Embed(title="Debug Information", description="Debug information for the bot", color=discord.Color.blue())
         embed.add_field(name="Bot Latency", value=f"{round(self.bot.latency * 1000)}ms")
-        embed.add_field(name="Bot Uptime", value=f"{datetime.datetime.now() - self.meta.start_time}")
+        embed.add_field(name="Bot Uptime", value=f"{uptime_str}")
         embed.add_field(name="Bot Version", value=f"{self.meta.version} - {self.meta.version_name}")
-        embed.add_field(name="Bot Memory Usage", value=f"{psutil.Process().memory_info().rss / 1024 ** 2} MB")
-        embed.add_field(name="Bot CPU Usage", value=f"{psutil.cpu_percent()}%")
+        embed.add_field(name="Bot Memory Usage", value=f"{round(psutil.Process().memory_info().rss / 1024 ** 2)} MB")
+        embed.add_field(name="Bot CPU Usage", value=f"{round(psutil.cpu_percent())}%")
 
         await interaction.response.send_message(embed=embed)    
 

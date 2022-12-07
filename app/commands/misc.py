@@ -2,6 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 import datetime
+import requests
 import psutil
 
 # local imports
@@ -65,7 +66,42 @@ class misc(commands.Cog):
         embed.add_field(name="Bot Memory Usage", value=f"{round(psutil.Process().memory_info().rss / 1024 ** 2)} MB")
         embed.add_field(name="Bot CPU Usage", value=f"{round(psutil.cpu_percent())}%")
 
-        await interaction.response.send_message(embed=embed)    
+        await interaction.response.send_message(embed=embed)
+
+    @app_commands.command(name="status",description="Check the status of a service")
+    @app_commands.rename(bt = "bot")
+    @app_commands.describe(bt = "The bot to check the status of")
+    @app_commands.describe(service = "The service to check the status of")
+    async def status(self, interaction : discord.Interaction, service:str = None, bt:discord.Member = None):
+        if service == None and bt == None:
+            await interaction.response.send_message("Please provide a service or a bot to check the status of.")
+            return
+        if service != None and bt != None:
+            await interaction.response.send_message("You can only check the status of a bot or a service, not both.")
+            return
+        if service != None:
+            try:
+                r = requests.get(service)
+                await interaction.response.send_message(f"Service {service} responded with status code {r.status_code}")
+            except Exception as e:
+                await interaction.response.send_message(f"Unable to get service {service}, are you sure it is a valid URL? \n \n Error: || {e} || ")
+        if bt != None:
+            if bt.bot == False:
+                await interaction.response.send_message("For privacy reasons, you can only check the status of bots.")
+                return
+            try:
+                userstatus = interaction.guild.get_member(bt.id).status
+                if userstatus == discord.Status.online:
+                    await interaction.response.send_message(f"<:online:949589635061915648> Bot {bt.mention} is online")
+                elif userstatus == discord.Status.idle:
+                    await interaction.response.send_message(f"<:idle:949589635087081503> Bot {bt.mention} is idle")
+                elif userstatus == discord.Status.dnd:
+                    await interaction.response.send_message(f"<:dnd:949589635091284019> Bot {bt.mention} is dnd")
+                else:
+                    await interaction.response.send_message(f"<:offline:949589634898350101> Bot {bt.mention} is offline")
+            except Exception as e:
+                await interaction.response.send_message(f"Unable to get bot {bt.name}, are you sure it is a valid bot? \n \n Error: || {e} || ")
+
 
 
 async def setup(bot: commands.Bot) -> None:

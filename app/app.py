@@ -37,6 +37,7 @@ meta = Meta()
 cogs = [
     "commands.admin",
     "commands.events",
+    "commands.help",
     "commands.misc",
     "commands.setup",
 ]

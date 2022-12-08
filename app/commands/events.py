@@ -6,6 +6,7 @@ from discord.ext import commands
 
 
 class events(commands.Cog):
+
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         self.help = helper.Helper()
@@ -31,8 +32,8 @@ class events(commands.Cog):
         )
 
         await self.help.send_notification(
-            self.help.Database.get_application(before.id).notifications, self.bot
-        )
+            self.help.Database.get_application(before.id).notifications,
+            self.bot)
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
@@ -40,7 +41,8 @@ class events(commands.Cog):
         try:
             embed = discord.Embed(
                 title=f"Hello, {guild.name} I am Status Checker",
-                description="I am a bot that will notify you when your application goes offline. For more information on my command usage see `/help`. You can find my [support server here.](https://discord.gg/2w5KSXjhGe) and if you're interested in supporting this project you can tip me on [Ko-Fi](https://ko-fi.com/wotanut) or follow me on [GitHub](https://github.com/wotanut)",
+                description=
+                "I am a bot that will notify you when your application goes offline. For more information on my command usage see `/help`. You can find my [support server here.](https://discord.gg/2w5KSXjhGe) and if you're interested in supporting this project you can tip me on [Ko-Fi](https://ko-fi.com/wotanut) or follow me on [GitHub](https://github.com/wotanut)",
                 color=discord.Color.green(),
             )
             embed.set_footer(text="Made with ❤️ by Sambot")
@@ -53,7 +55,8 @@ class events(commands.Cog):
         log_channel = self.bot.get_channel(1050359176859222017)
         embed = discord.Embed(
             title="I joined a guild",
-            description=f"Guild Name: {guild.name} \n Guild ID: {guild.id} \n Total Guilds: {len(self.bot.guilds)}",
+            description=
+            f"Guild Name: {guild.name} \n Guild ID: {guild.id} \n Total Guilds: {len(self.bot.guilds)}",
             color=discord.Color.green(),
         )
         if guild.icon != None:
@@ -71,7 +74,8 @@ class events(commands.Cog):
             user = await self.bot.fetch_user(guild.owner_id)
             embed = discord.Embed(
                 title="Hey there, I am sorry to see you go",
-                description="All references of your guild have been removed from our database. If you would feel up to, please can you fill in the feedback form below.",
+                description=
+                "All references of your guild have been removed from our database. If you would feel up to, please can you fill in the feedback form below.",
                 color=discord.Color.red(),
             )
             await user.send(embed=embed, view=buttons.Feedback())
@@ -81,7 +85,8 @@ class events(commands.Cog):
         log_channel = self.bot.get_channel(1050359176859222017)
         embed = discord.Embed(
             title="I Left a guild",
-            description=f"Guild Name: {guild.name} \n Guild ID: {guild.id} \n Total Guilds: {len(self.bot.guilds)}",
+            description=
+            f"Guild Name: {guild.name} \n Guild ID: {guild.id} \n Total Guilds: {len(self.bot.guilds)}",
             color=discord.Color.red(),
         )
         if guild.icon != None:

@@ -17,13 +17,9 @@ from utilities.data import Meta
 
 # quart imports
 
-
 # other imports
 
-
 # local imports
-
-
 
 # general configuration
 
@@ -59,7 +55,6 @@ oauth = DiscordOAuth2Session(app)
 app.register_blueprint(redirects)
 app.register_blueprint(routing)
 
-
 # bot stuff
 
 
@@ -68,9 +63,8 @@ async def on_ready():
     # on ready we will start the web server, set the bot's status and log the uptime as well as a few other admin things
     await bot.change_presence(
         status=discord.Status.online,
-        activity=discord.Activity(
-            type=discord.ActivityType.watching, name="over your bots"
-        ),
+        activity=discord.Activity(type=discord.ActivityType.watching,
+                                  name="over your bots"),
     )
 
     # load the cogs
@@ -84,7 +78,8 @@ async def on_ready():
     log_channel = bot.get_channel(949388038260273193)
     embed = discord.Embed(
         title="Bot Started",
-        description=f"Succesful bot startup at {datetime.datetime.now().strftime('%d/%m/%Y at %H:%M')}",
+        description=
+        f"Succesful bot startup at {datetime.datetime.now().strftime('%d/%m/%Y at %H:%M')}",
         color=0x00FF00,
     )
     await log_channel.send(embed=embed)
@@ -130,7 +125,8 @@ async def on_command_error(ctx, error):
     log_channel = bot.get_channel(949388038260273193)
     embed = discord.Embed(
         title="Error",
-        description=f"An error occured: {error} \n In Guild: {ctx.guild.name} \n Guild Owner: {ctx.guild.owner.mention}",
+        description=
+        f"An error occured: {error} \n In Guild: {ctx.guild.name} \n Guild Owner: {ctx.guild.owner.mention}",
         color=0xFF0000,
     )
     await log_channel.send(embed=embed)

@@ -1,9 +1,7 @@
 # discord imports
 
-from distutils.cmd import Command
 import discord
 from discord.ext import commands
-import discord.ui as ui
 
 # quart imports
 
@@ -16,7 +14,6 @@ from dotenv import load_dotenv
 import os
 import asyncio
 import datetime
-from typing import List
 import traceback
 
 # local imports
@@ -90,7 +87,7 @@ async def on_ready():
     # sync the commands
 
     bot.tree.copy_global_to(guild=discord.Object(939479619587952640))
-    synced = await bot.tree.sync(guild=discord.Object(939479619587952640))
+    await bot.tree.sync(guild=discord.Object(939479619587952640))
 
     print(f"Sucesfully logged in as {bot.user.name}#{bot.user.discriminator} with loaded cogs {cogs}")
 

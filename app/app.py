@@ -1,12 +1,10 @@
 # discord imports
-
 import asyncio
 import datetime
 import os
 import traceback
 
 import discord
-# from blueprints.api import api
 from blueprints.redirects import redirects
 from blueprints.routing import routing
 from discord.ext import commands
@@ -15,6 +13,7 @@ from helper import Helper
 from quart import Quart
 from quart_discord import DiscordOAuth2Session
 from utilities.data import Meta
+# from blueprints.api import api
 
 # quart imports
 

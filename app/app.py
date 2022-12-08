@@ -66,7 +66,7 @@ app.register_blueprint(routing)
 async def on_ready():
     # on ready we will start the web server, set the bot's status and log the uptime as well as a few other admin things
     await bot.change_presence(status=discord.Status.online,activity=discord.Activity(type=discord.ActivityType.watching, name="over your bots"))
-  
+
     # load the cogs
     for cog in cogs:
         try:
@@ -93,7 +93,7 @@ async def on_ready():
 
 async def check_applications():
     """ Checks the applications every 5 minutes """
-    
+
     while True:
         await asyncio.sleep(300)
         await Help.check_applications(bot)
@@ -108,7 +108,7 @@ async def on_command_error(ctx,error):
     if isinstance(error, commands.MissingPermissions or commands.MissingRole):
         await ctx.send("You don't have the permissions to do that!")
         return
-    
+
     if isinstance(error, commands.BotMissingPermissions):
         await ctx.send("I don't have the permissions to do that!")
         return

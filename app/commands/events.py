@@ -3,6 +3,7 @@ from discord.ext import commands
 
 # local imports
 import helper as helper
+import views.buttons as buttons
 
 class events(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
@@ -14,7 +15,7 @@ class events(commands.Cog):
 
         # checks
 
-        if before.bot == True:
+        if before.bot == False:
             return
         elif before.id == self.bot.user.id:
             return
@@ -25,92 +26,47 @@ class events(commands.Cog):
 
         # send the notification
 
+        print(f"Sending notification for {before.name}#{before.discriminator} ({before.id})")
+
         await self.help.send_notification(self.help.Database.get_application(before.id).notifications,self.bot)
 
-    # @bot.event
-    # async def on_presence_update(before,after):
-
-    #     application = Helper.get_from_database(before.id)
-    #     if application["application_type"] != "bot":
-    #         return # if the bot is not a bot, we will not do anything
-
-    #     for notification in bot["notifications"]:
-    #         if notification["webhook"]:
-    #             Helper.webhook(notification["webhook"]) 
-    #         elif notification["email"]:
-    #             Helper.email(notification["email"])
-    #         elif notification["sms"]:
-    #             Helper.sms(notification["sms"])
-    #         elif notification["discord"]:
-
-    #             # send the message
-
-    #             channel = await bot.get_channel(notification["discord"]["channel"])
-    #             if notification["discord"]["content_type"] == "application/json":
-    #                 await channel.send(embed=discord.Embed.from_dict(notification["discord"]["payload"]))
-    #             else:
-    #                 await channel.send(notification["discord"]["payload"])
-                
-    #             # auto publish
-    #             if notification["discord"]["auto_publish"] == True:
-    #                 try:
-    #                     await channel.publish()
-    #                 except:
-    #                     pass
-                
-    #             # auto lock
-    #             if notification["discord"]["auto_lock"] == True:
-    #                 guild = await bot.fetch_guild(notification["discord"]["guild"])
-    #                 try:
-    #                     for channel in guild.channels:
-    #                         if channel.id == notification["discord"]["channel"]:
-    #                             await channel.edit(guild.default_role, reason="Auto locked channel", overwrites=discord.PermissionOverwrite(send_messages=False))
-    #                 except:
-    #                     pass
-            
-    #             pass
-    #         elif notification["dm"]:
-    #             user = await bot.fetch_user(notification["dm"]["user"])
-    #             if notification["dm"]["content_type"] == "application/json":
-    #                 await user.send(embed=discord.Embed.from_dict(notification["dm"]["payload"]))
-    #             else:
-    #                 await user.send(notification["dm"]["payload"])
-
-    #             pass
-
-
-    #     raise discord.errors.ClientException()
-
     @commands.Cog.listener()
-    async def on_guild_join(self,guild):
+    async def on_guild_join(self,guild: discord.Guild):
         # send a message to the channel
         try:
-            guild = await self.bot.get_guild(guild)
-            channel = await guild.get_channel()[0]
-            embed = discord.Embed(title=f"Hello, {guild.name} I am Status Checker", description="I am a bot that will notify you when your application goes offline. To get started, please run the command `/setup`", color=discord.Color.green())
-            await channel.send(embed=embed)
-        except:
+            embed = discord.Embed(title=f"Hello, {guild.name} I am Status Checker", description="I am a bot that will notify you when your application goes offline. For more information on my command usage see `/help`. You can find my [support server here.](https://discord.gg/2w5KSXjhGe) and if you're interested in supporting this project you can tip me on [Ko-Fi](https://ko-fi.com/wotanut) or follow me on [GitHub](https://github.com/wotanut)", color=discord.Color.green())
+            embed.set_footer(text="Made with ❤️ by Sambot")
+            await guild.system_channel.send(embed=embed)
+        except Exception as e:
             pass
+
         # log the join
 
-        log_channel = self.bot.get_channel(1042366316897636362)
-        embed = discord.Embed(title="I joined a guild", description=f"Guild Name: {guild.name} \n Guild ID: {guild.id}", color=discord.Color.green())
+        log_channel = self.bot.get_channel(1050359176859222017)
+        embed = discord.Embed(title="I joined a guild", description=f"Guild Name: {guild.name} \n Guild ID: {guild.id} \n Total Guilds: {len(self.bot.guilds)}", color=discord.Color.green())
+        if guild.icon != None:
+            embed.set_thumbnail(url=guild.icon)
+        embed.set_footer(text=f"Guild Owner: {guild.owner.name}#{guild.owner.discriminator}")
+        await log_channel.send(embed=embed)
 
 
     @commands.Cog.listener()
-    async def on_guild_remove(self,guild):
-        self.help.remove_from_database(guild.id)
+    async def on_guild_remove(self,guild : discord.Guild):
+        # self.help.remove_from_database(guild.id)
 
         try:
             user = await self.bot.fetch_user(guild.owner_id)
-            embed = discord.Embed(title="Hey there, I am sorry to see you go", description="All references of your guild have been removed from our database", color=discord.Color.red())
-            # opportunity for a button
-            await user.send(embed=embed)
+            embed = discord.Embed(title="Hey there, I am sorry to see you go", description="All references of your guild have been removed from our database. If you would feel up to, please can you fill in the feedback form below.", color=discord.Color.red())
+            await user.send(embed=embed,view=buttons.Feedback())
         except:
             pass
 
-        log_channel = self.bot.get_channel(1042366316897636362)
-        embed = discord.Embed(title="I left a guild", description=f"Guild Name: {guild.name} \n Guild ID: {guild.id}", color=discord.Color.red())
+        log_channel = self.bot.get_channel(1050359176859222017)
+        embed = discord.Embed(title="I Left a guild", description=f"Guild Name: {guild.name} \n Guild ID: {guild.id} \n Total Guilds: {len(self.bot.guilds)}", color=discord.Color.red())
+        if guild.icon != None:
+            embed.set_thumbnail(url=guild.icon)
+        embed.set_footer(text=f"Guild Owner: {guild.owner.name}#{guild.owner.discriminator}")
+        await log_channel.send(embed=embed)
 
 
 

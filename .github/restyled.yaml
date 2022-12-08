@@ -30,8 +30,7 @@ statuses:
   differences: true
   no_differences: true
 
-request_review:
-  - "author"
+request_review: "author"
 
 labels: []
 

@@ -2,7 +2,6 @@ import discord
 
 
 class Feedback(discord.ui.View):
-
     def __init__(self):
         super().__init__()
 
@@ -11,4 +10,5 @@ class Feedback(discord.ui.View):
                 label="Feedback Form",
                 url="https://forms.gle/aGccPTY8u8QNemzt7",
                 style=discord.ButtonStyle.link,
-            ))
+            )
+        )

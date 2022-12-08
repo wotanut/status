@@ -13,6 +13,7 @@ from helper import Helper
 from quart import Quart
 from quart_discord import DiscordOAuth2Session
 from utilities.data import Meta
+
 # from blueprints.api import api
 
 # quart imports
@@ -63,8 +64,9 @@ async def on_ready():
     # on ready we will start the web server, set the bot's status and log the uptime as well as a few other admin things
     await bot.change_presence(
         status=discord.Status.online,
-        activity=discord.Activity(type=discord.ActivityType.watching,
-                                  name="over your bots"),
+        activity=discord.Activity(
+            type=discord.ActivityType.watching, name="over your bots"
+        ),
     )
 
     # load the cogs

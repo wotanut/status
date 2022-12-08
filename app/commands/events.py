@@ -2,11 +2,11 @@ import discord
 import helper as helper
 import views.buttons as buttons
 from discord.ext import commands
+
 # local imports
 
 
 class events(commands.Cog):
-
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         self.help = helper.Helper()
@@ -32,8 +32,8 @@ class events(commands.Cog):
         )
 
         await self.help.send_notification(
-            self.help.Database.get_application(before.id).notifications,
-            self.bot)
+            self.help.Database.get_application(before.id).notifications, self.bot
+        )
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):

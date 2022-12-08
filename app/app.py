@@ -1,29 +1,30 @@
 # discord imports
 
-import discord
-from discord.ext import commands
-
-# quart imports
-
-from quart import Quart
-from quart_discord import DiscordOAuth2Session
-
-# other imports
-
-from dotenv import load_dotenv
-import os
 import asyncio
 import datetime
+import os
 import traceback
 
-# local imports
-
-from utilities.data import Meta
-from helper import Helper
-
+import discord
 # from blueprints.api import api
 from blueprints.redirects import redirects
 from blueprints.routing import routing
+from discord.ext import commands
+from dotenv import load_dotenv
+from helper import Helper
+from quart import Quart
+from quart_discord import DiscordOAuth2Session
+from utilities.data import Meta
+
+# quart imports
+
+
+# other imports
+
+
+# local imports
+
+
 
 # general configuration
 

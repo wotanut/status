@@ -1,9 +1,8 @@
 import discord
-from discord.ext import commands
-
 # local imports
 import helper as helper
 import views.buttons as buttons
+from discord.ext import commands
 
 
 class events(commands.Cog):

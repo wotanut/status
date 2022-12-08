@@ -44,7 +44,7 @@ cogs = [
 intents = discord.Intents.default()
 intents.presences = True
 intents.members = True
-bot = commands.Bot(command_prefix=commands.when_mentioned,intents=intents)
+bot = commands.Bot(command_prefix=commands.when_mentioned, intents=intents)
 
 # quart specific  configuration
 
@@ -65,7 +65,7 @@ app.register_blueprint(routing)
 @bot.event
 async def on_ready():
     # on ready we will start the web server, set the bot's status and log the uptime as well as a few other admin things
-    await bot.change_presence(status=discord.Status.online,activity=discord.Activity(type=discord.ActivityType.watching, name="over your bots"))
+    await bot.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="over your bots"))
 
     # load the cogs
     for cog in cogs:
@@ -76,12 +76,13 @@ async def on_ready():
             traceback.print_exc()
 
     log_channel = bot.get_channel(949388038260273193)
-    embed = discord.Embed(title="Bot Started", description=f"Succesful bot startup at {datetime.datetime.now().strftime('%d/%m/%Y at %H:%M')}", color=0x00ff00)
+    embed = discord.Embed(
+        title="Bot Started", description=f"Succesful bot startup at {datetime.datetime.now().strftime('%d/%m/%Y at %H:%M')}", color=0x00ff00)
     await log_channel.send(embed=embed)
 
     # start checking the services
 
-    bot.loop.create_task(app.run_task(host="0.0.0.0",port=1234))
+    bot.loop.create_task(app.run_task(host="0.0.0.0", port=1234))
     bot.loop.create_task(check_applications())
 
     # sync the commands
@@ -89,7 +90,9 @@ async def on_ready():
     bot.tree.copy_global_to(guild=discord.Object(939479619587952640))
     await bot.tree.sync(guild=discord.Object(939479619587952640))
 
-    print(f"Sucesfully logged in as {bot.user.name}#{bot.user.discriminator} with loaded cogs {cogs}")
+    print(
+        f"Sucesfully logged in as {bot.user.name}#{bot.user.discriminator} with loaded cogs {cogs}")
+
 
 async def check_applications():
     """ Checks the applications every 5 minutes """
@@ -98,8 +101,9 @@ async def check_applications():
         await asyncio.sleep(300)
         await Help.check_applications(bot)
 
+
 @bot.event
-async def on_command_error(ctx,error):
+async def on_command_error(ctx, error):
     await ctx.send(f"An error occured: {error}")
 
     if isinstance(error, commands.CommandNotFound):
@@ -114,7 +118,8 @@ async def on_command_error(ctx,error):
         return
 
     log_channel = bot.get_channel(949388038260273193)
-    embed = discord.Embed(title="Error", description=f"An error occured: {error} \n In Guild: {ctx.guild.name} \n Guild Owner: {ctx.guild.owner.mention}", color=0xff0000)
+    embed = discord.Embed(
+        title="Error", description=f"An error occured: {error} \n In Guild: {ctx.guild.name} \n Guild Owner: {ctx.guild.owner.mention}", color=0xff0000)
     await log_channel.send(embed=embed)
 
 if __name__ == "__main__":

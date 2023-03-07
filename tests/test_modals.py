@@ -6,8 +6,7 @@ import discord
 from discord.ext import commands
 
 # local imports
-from ..app.modals import modals
-
+from ..app.views import modals as modals
 class TestModal:
 
     @pytest.mark.asyncio

@@ -97,8 +97,25 @@ class TestDatabase:
         db._DatabaseV2__nuke()
         assert db.get_all_applications() == []
 
-    def test_get_all_applications(self):
-        # if this test passes then we can be confident that the add_application_to_databse and get_application_from_database work
+    def test_applications(self):
+        """
+        Tests everything that could be in the applications section of the database.
+
+        Methods
+        -------
+        get_all_applications()
+        get_application_from_database(id, name)
+        get_application_notifications(id, name)
+
+        add_application_to_database(app)
+        add_notification_to_application(id, name, notification)
+
+        remove_application_from_database(id, name)
+        remove_notification_from_application(id, name, notification_id)
+
+        update_application_in_database(id, name, app)
+        update_notification_in_application(id, name, notification)
+        """
         db = database_v2.DatabaseV2()
         assert db.get_all_applications() == []
         app = data.Application(id=1,type=json.dumps(self.json_type_i),notifications=json.dumps(self.json_notifications_i))
@@ -109,6 +126,21 @@ class TestDatabase:
         assert db.get_application_from_database(2) == None
         assert db.get_application_from_database() == ValueError
         assert db.get_application_from_database("Test Bot") == app
+
+    def test_users(self):
+        """
+        Tests everything that could be in the users section of the database
+
+        Methods
+        -------
+        add_subscription_to_user(id,name,application,notification)
+        remove_subscription_from_user(id,name,application,notification)
+        update_subscription_in_user(id,name,application,notification)
+        get_user_subscriptions(id)
+        """
+
+
+
 
         
 

@@ -15,12 +15,6 @@ from quart_discord import DiscordOAuth2Session
 from utilities.data import Meta
 # from blueprints.api import api
 
-# quart imports
-
-# other imports
-
-# local imports
-
 # general configuration
 
 load_dotenv()
@@ -103,7 +97,6 @@ async def check_applications():
     """Checks the applications every 5 minutes"""
 
     while True:
-        await asyncio.sleep(300)
         await Help.check_applications(bot)
 
 

@@ -2,11 +2,10 @@ import asyncio
 import os
 
 import aiohttp
-import requests
-from pymongo import MongoClient
-
 import discord
+import requests
 from discord import app_commands
+from pymongo import MongoClient
 
 # database connection
 cluster = MongoClient(os.environ.get("mongo"))

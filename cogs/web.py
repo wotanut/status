@@ -28,8 +28,7 @@ class Web(app_commands.Group):
                 )
             except Exception as e:
                 await interaction.response.send_message(
-                    f" I couldn't find {e} \n try <https://{e}> instead."
-                )
+                    f" I couldn't find {e} \n try <https://{e}> instead.")
 
     @app_commands.command(description="Check the latency of a website")
     @app_commands.describe(url="The website to check on")

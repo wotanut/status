@@ -1,0 +1,5 @@
+discord.py
+asyncio
+python_dotenv
+pymongo
+mcstatus

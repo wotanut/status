@@ -22,16 +22,22 @@ class Web(app_commands.Group):
         async with aiohttp.ClientSession() as session:
             try:
                 r = await session.get(url=url)
-                await interaction.response.send_message(f"The website responded with the status code: {r.status} \n {r.reason}")
+                await interaction.response.send_message(
+                    f"The website responded with the status code: {r.status} \n {r.reason}"
+                )
             except Exception as e:
-                await interaction.response.send_message(f" I couldn't find {e} \n try <https://{e}> instead.")
+                await interaction.response.send_message(
+                    f" I couldn't find {e} \n try <https://{e}> instead."
+                )
 
     @app_commands.command(description="Check the latency of a website")
     @app_commands.describe(url="The website to check on")
     async def latency(self, interaction: discord.Interaction, url: str):
         """Check the latency of a website"""
         try:
-            await interaction.response.send_message(f"The website responded in {requests.get(url=url).elapsed.total_seconds()} seconds")
+            await interaction.response.send_message(
+                f"The website responded in {requests.get(url=url).elapsed.total_seconds()} seconds"
+            )
         except Exception as e:
             await interaction.response.send_message(e)
 
@@ -41,7 +47,10 @@ class Web(app_commands.Group):
         """Take a screenshot of a website"""
         try:
             embed = discord.Embed(
-                title="Screenshot", description=f"The screenshot of {url}", color=0x00ff00)
+                title="Screenshot",
+                description=f"The screenshot of {url}",
+                color=0x00FF00,
+            )
             embed.set_image(url=f"https://image.thum.io/get/{url}")
             await interaction.response.send_message(embed=embed)
         except Exception as e:

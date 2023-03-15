@@ -72,3 +72,8 @@ class Misc(app_commands.Group):
                     embed.add_field(name="Auto Publish", value=f"Auto Publish is set to {auto_publish}", inline=False)
                     embed.add_field(name="Lock", value=f"Locking the server is set to {lock}", inline=True)
                     await interaction.response.send_message(embed=embed)
+
+    @app_commands.command(description="Check the latency of a bot")
+    async def ping(self, interaction: discord.Interaction):
+        await interaction.response.send_message(f":ping_pong: Pong!\n **Bot**: {round(interaction.client.latency * 1000)} ms")  
+

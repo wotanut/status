@@ -10,7 +10,7 @@ from pymongo import MongoClient
 # database connection
 cluster = MongoClient(os.environ.get("mongo"))
 db = cluster["discord"]
-collection = db["status"]
+collection = db["status-web"]
 
 
 class Web(app_commands.Group):
@@ -55,3 +55,5 @@ class Web(app_commands.Group):
             await interaction.response.send_message(embed=embed)
         except Exception as e:
             await interaction.response.send_message(e)
+
+    

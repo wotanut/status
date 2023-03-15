@@ -4,6 +4,7 @@ import os
 import aiohttp
 import discord
 import requests
+from discord.ext import commands, tasks
 from discord import app_commands
 from pymongo import MongoClient
 
@@ -13,7 +14,7 @@ db = cluster["discord"]
 collection = db["status-web"]
 
 
-class Web(app_commands.Group):
+class Web(commands.GroupCog):
     """Watch over Websites"""
 
     @app_commands.command(description="Check the status of a website")
@@ -56,4 +57,5 @@ class Web(app_commands.Group):
         except Exception as e:
             await interaction.response.send_message(e)
 
-    
+async def setup(client):
+    await client.add_cog(Web(client))

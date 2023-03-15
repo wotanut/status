@@ -1,6 +1,7 @@
 import os
 import discord
 from discord import app_commands
+from discord.ext import tasks, commands
 import datetime
 import asyncio
 import aiohttp
@@ -28,18 +29,19 @@ intents.members = True
 
 startTime = 0
 
-bot = discord.Client(intents=intents)
+bot = commands.Bot(command_prefix="/", intents=intents)
 
-tree = app_commands.CommandTree(bot)
+
 
 @bot.event 
 async def on_ready():  # When the bot is ready
-    tree.add_command(Bot())
-    tree.add_command(Misc())
-    tree.add_command(Minecraft())
-    tree.add_command(Web())
 
-    await tree.sync()  # Syncs the command tree
+    bot.tree.add_command(Bot())
+    bot.tree.add_command(Misc())
+    bot.tree.add_command(Minecraft())
+    await bot.load_extension("cogs.web")
+
+    await bot.tree.sync()  # Syncs the command tree
 
     print("Ready!")
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="over your bots!"))
@@ -63,11 +65,6 @@ async def stats(interaction: discord.Interaction):
     await interaction.response.send_message(embed=embed)
 
 
-# Isn't this supposed to be in bots.py?
-
-@tree.command(description="Check the latency of a bot")
-async def ping(interaction: discord.Interaction):
-    await interaction.response.send_message(f":ping_pong: Pong!\n **Bot**: {round(bot.latency * 1000)} ms")  
 
 @bot.event
 async def on_presence_update(before,after):
@@ -201,6 +198,7 @@ async def on_guild_join(guild):
         async with session.post(dbg,headers={"Authorization": os.getenv("dbg")},json={"guildCount": int(len(bot.guilds))}) as resp:
             response = await resp.json()
             pass
+
 
 
 # runs the bot

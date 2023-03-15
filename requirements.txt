@@ -5,3 +5,4 @@ python_dotenv
 quart
 mcstatus
 quart_discord
+psutil

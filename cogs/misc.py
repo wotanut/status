@@ -72,3 +72,23 @@ class Misc(app_commands.Group):
                     embed.add_field(name="Auto Publish", value=f"Auto Publish is set to {auto_publish}", inline=False)
                     embed.add_field(name="Lock", value=f"Locking the server is set to {lock}", inline=True)
                     await interaction.response.send_message(embed=embed)
+
+    @app_commands.command(description="Check the latency of a bot")
+    async def ping(self, interaction: discord.Interaction):
+        await interaction.response.send_message(f":ping_pong: Pong!\n **Bot**: {round(interaction.client.latency * 1000)} ms")  
+    
+    @app_commands.command(description="Give some information about the bot")
+    async def stats(self, interaction: discord.Interaction):
+        members = 0
+        for guild in interaction.client.guilds:
+            members += guild.member_count - 1
+
+    
+        embed=discord.Embed(title="Status Checker Stats")
+        embed.set_author(name="Concept by SamBot#7421", url="https://github.com/wotanut")
+        embed.add_field(name="Guilds", value=f"```{len(interaction.client.guilds)}```", inline=True) 
+        embed.add_field(name="Users", value=f"```{members}```", inline=True)
+        embed.set_footer(text="Thank you for supporting Status Checker :)")
+        await interaction.response.send_message(embed=embed)
+
+

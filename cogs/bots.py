@@ -1,14 +1,24 @@
 import discord
 from discord import app_commands
+from discord.ext import commands
 from pymongo import MongoClient
 import os
+import datetime
+import asyncio
+import aiohttp
+from dotenv import load_dotenv
+
 
 # database connection
+load_dotenv()
 cluster = MongoClient(os.environ.get("mongo"))
 db = cluster["discord"]
 collection = db["status"]
 
+
+
 class Bot(app_commands.Group):
+
     """Watch over bots"""
 
     @app_commands.command(description="Check the status of a bot")
@@ -29,7 +39,7 @@ class Bot(app_commands.Group):
                 else:
                     await interaction.response.send_message(f"<:offline:949589634898350101> {user.mention} is offline.")
     
-    @app_commands.command(description="Clears every mention of your guild from the database")
+    @app_commands.command(description="Clears every mention of your guild from the bot database")
     @app_commands.describe(user="The bot to remove from the database")
     @app_commands.checks.has_permissions(manage_channels=True)
     async def remove(self ,interaction: discord.Interaction, user:discord.User = None):
@@ -47,3 +57,68 @@ class Bot(app_commands.Group):
                     await interaction.response.send_message(f"Removed {user.mention} from the database")
             except Exception as e:
                 await interaction.response.send_message(e)
+
+    @app_commands.command(description="Adds a bot to watch for status changes")
+    @app_commands.describe(user="The user to watch the status of")
+    @app_commands.describe(channel="The Channel to send down messages to")
+    @app_commands.describe(down_message="The down message to send to the channel")
+    @app_commands.describe(auto_publish="Whether the bot should publish the down message")
+    @app_commands.describe(dm="Whether the bot should Direct Message you")
+    @app_commands.describe(lock="Whether the bot should Lock the server if the bot goes down")
+    @app_commands.checks.has_permissions(manage_channels=True)
+    async def add(self, interaction: discord.Interaction, user: discord.User,channel: discord.TextChannel, down_message: str, auto_publish: bool = False, dm:bool = False, lock:bool = False):
+        """Adds a bot to watch for status changes"""
+
+        if dm == False:
+            owner = 0
+        elif dm == True:
+            owner = interaction.user.id
+
+        try:
+            channel = interaction.client.get_channel(int(channel.id))
+            if type(channel) != discord.channel.TextChannel:
+                await interaction.response.send_message("That doesn't look like a text channel to me")
+                return
+            if auto_publish == True and channel.is_news() == False:
+                auto_publish = False
+        except Exception as e:
+            await interaction.response.send_message(f"Failed to get channel, this is usually becuase I do not have access or the channel does not exist. \n Error: || {e} ||")
+            return
+
+        if user == interaction.client.user.id:
+            await interaction.response.send_message("You cannot add me for status checks\nYou can only add other bots")
+            return
+        
+        # get the bot
+        if not user.bot:
+            await interaction.response.send_message("For privacy reasons I can only track bots")
+            return
+
+        # Instead of try/catch, just check for permissions
+        permissionsInChannel = channel.permissions_for(channel.guild.me)
+        if not permissionsInChannel.send_messages: 
+            await interaction.response.send_message("I cannot send messages in that channel")
+            return
+        if not permissionsInChannel.manage_messages: # Needed to be able to publish messages in an announcements channel
+            await interaction.response.send_message("I cannot manage messages in that channel")
+            return
+
+        if interaction.guild.me.guild_permissions.manage_channels == False and lock == False:
+            await interaction.response.send_message("In order to lock the server I need to have manage channels permissions")
+            return
+
+        # If bot has all needed permissions, send a message in that channel (and catch the error if it fails somehow)
+        try:
+            message = await channel.send("<a:loading:949590942925611058> Loading Status Checker information")
+        except:
+            await interaction.response.send_message("I do not have permissions to send messages in that channel")
+            return
+
+        try:
+            collection.insert_one({"_id": user.id, f"{interaction.guild.id}": [channel.id,message.id,down_message,auto_publish,owner,lock]})
+        except:
+            collection.update_one({"_id": user.id}, {"$set" : {f"{interaction.guild.id}": [channel.id,message.id,down_message,auto_publish,owner,lock]}})
+
+        await message.edit(content=f"Status Checker information loaded\nWatching {user.mention}")
+        await interaction.response.send_message(f"Watching {user.mention} I will alert you if their status changes")
+

@@ -4,3 +4,4 @@ python_dotenv
 pymongo
 mcstatus
 aiohttp[speedups]
+flask

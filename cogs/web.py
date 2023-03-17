@@ -65,7 +65,7 @@ class Web(commands.GroupCog):
     @app_commands.describe(website="The Website to remove from the database")
     @app_commands.checks.has_permissions(manage_channels=True)
     async def remove(self ,interaction: discord.Interaction, website: str = None):
-        """Clears every mention of your bot from the database"""
+        """Clears every mention of your Website from the database"""
         try:
             if website == None:
                 collection.update_many( { }, { "$unset": { str(interaction.guild.id): "" } } )

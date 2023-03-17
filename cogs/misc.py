@@ -87,7 +87,6 @@ class Misc(app_commands.Group):
         embed=discord.Embed(title="Status Checker Stats")
         embed.set_author(name="Concept by SamBot#7421", url="https://github.com/wotanut")
         embed.add_field(name="Guilds", value=f"```{len(interaction.client.guilds)}```", inline=True) 
-        embed.add_field(name="Users", value=f"```{members}```", inline=True)
         embed.set_footer(text="Thank you for supporting Status Checker :)")
         await interaction.response.send_message(embed=embed)
 

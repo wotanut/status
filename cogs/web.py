@@ -19,7 +19,6 @@ class Web(commands.GroupCog):
         self.client = client
     async def cog_load(self):
         self.website.start()
-        print("loaded")
     """Watch over Websites"""
 
     @app_commands.command(description="Check the status of a website")
@@ -97,9 +96,7 @@ class Web(commands.GroupCog):
                                     already_down = result[k][4]
                                     if already_down == False:
                                         return
-                                    print(f"{result[k][0]} \n {down_message} \n {auto_publish} \n {guild_id} \n {already_down}")
                                     collection.update_one({"_id": url}, {"$set" : {f"{guild_id}": [channel ,down_message,auto_publish, guild_id, already_down]}})
-                                    
                                     pass
                         else:
                             await session.close()

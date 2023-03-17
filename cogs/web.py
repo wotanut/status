@@ -83,42 +83,42 @@ class Web(commands.GroupCog):
             try:
                 results = collection.find()
                 for result in results:
-                        r = await session.get(result ["_id"])
-                        if r.status in range(100, 500):
-                            await session.close()
-                            for k, v in result.items():
-                                if isinstance (v, list):
-                                    server = result[k][0]
-                                    channel = self.client.get_channel(server)
-                                    down_message = result[k][1]
-                                    auto_publish = result[k][2]
-                                    guild_id = result[k][3]
-                                    already_down = result[k][4]
-                                    if already_down == False:
-                                        return
-                                    collection.update_one({"_id": url}, {"$set" : {f"{guild_id}": [channel ,down_message,auto_publish, guild_id, already_down]}})
-                                    pass
-                        else:
-                            await session.close()
-                            for k, v in result.items():
-                                if isinstance (v, list):
-                                    server = result[k][0]
-                                    channel = self.client.get_channel(server)
-                                    down_message = result[k][1]
-                                    auto_publish = result[k][2]
-                                    guild_id = result[k][3]
-                                    already_down = result[k][4]
-                                    if already_down == True:
-                                        return
-                                    down_msg = await channel.send(down_message)
-                                    already_down = True
-                                    collection.update_one({"_id": result["_id"]}, {"$set" : {f"{guild_id}": [channel,down_message,auto_publish, guild_id, already_down]}})
+                        async with session.get(result["_id"]) as r:
+                            if r.status in range(100, 500):
+                                await session.close()
+                                for k, v in result.items():
+                                    if isinstance (v, list):
+                                        server = result[k][0]
+                                        channel = self.client.get_channel(server)
+                                        down_message = result[k][1]
+                                        auto_publish = result[k][2]
+                                        guild_id = result[k][3]
+                                        already_down = result[k][4]
+                                        if already_down == False:
+                                            return
+                                        collection.update_one({"_id": url}, {"$set" : {f"{guild_id}": [channel ,down_message,auto_publish, guild_id, already_down]}})
+                                        pass
+                            else:
+                                await session.close()
+                                for k, v in result.items():
+                                    if isinstance (v, list):
+                                        server = result[k][0]
+                                        channel = self.client.get_channel(server)
+                                        down_message = result[k][1]
+                                        auto_publish = result[k][2]
+                                        guild_id = result[k][3]
+                                        already_down = result[k][4]
+                                        if already_down == True:
+                                            return
+                                        down_msg = await channel.send(down_message)
+                                        already_down = True
+                                        collection.update_one({"_id": result["_id"]}, {"$set" : {f"{guild_id}": [channel,down_message,auto_publish, guild_id, already_down]}})
 
-                                    if auto_publish == True:
-                                        try:
-                                            await down_msg.publish()
-                                        except:
-                                            pass
+                                        if auto_publish == True:
+                                            try:
+                                                await down_msg.publish()
+                                            except:
+                                                pass
             except Exception as e:
                 print(e)
 
@@ -133,8 +133,14 @@ class Web(commands.GroupCog):
             try:
                 r = await session.get(url=website)
             except Exception as e:
-                await interaction.response.send_message(f"{e} That isn't a vaild website please try this instead https://{e}")
+                await interaction.response.send_message(f"{e} That isn't a vaild website please try this instead <https://{e}>")
                 return
+            try:
+                if website.startswith('http'):
+                    await interaction.response.send_message(f"The Link is vaild but you can only use https \n Please try this command again but with https://")
+                    return
+            except Exception as e:
+                print(e)
 
             try:
                 channel = interaction.client.get_channel(int(channel.id))

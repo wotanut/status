@@ -84,7 +84,7 @@ class Web(commands.GroupCog):
                 results = collection.find()
                 for result in results:
                         r = await session.get(result ["_id"])
-                        if r.status == 200:
+                        if r.status in range(100, 500):
                             await session.close()
                             for k, v in result.items():
                                 if isinstance (v, list):

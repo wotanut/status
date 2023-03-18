@@ -35,17 +35,19 @@ bot = commands.Bot(command_prefix="/", intents=intents)
 
 @bot.event 
 async def on_ready():  # When the bot is ready
-
-    bot.tree.add_command(Bot())
-    bot.tree.add_command(Misc())
-    bot.tree.add_command(Minecraft())
-    await bot.load_extension("cogs.web")
-
-    await bot.tree.sync()  # Syncs the command tree
-
     print("Ready!")
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="over your bots!"))
     print(bot.user)  # Prints the bot's username and identifier
+    try:
+        bot.tree.add_command(Bot())
+        bot.tree.add_command(Misc())
+        bot.tree.add_command(Minecraft())
+        await bot.load_extension("cogs.web")
+
+        await bot.tree.sync()  # Syncs the command tree
+    except: return
+
+        
 
 
 updated = []

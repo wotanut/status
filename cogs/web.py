@@ -142,7 +142,7 @@ class Web(commands.GroupCog):
             try:
                 r = await session.get(url=website)
             except Exception as e:
-                await interaction.response.send_message(f"{e} That isn't a vaild website please try this instead <https://{e}>")
+                await interaction.response.send_message(f"The website was not found please use <https://dnschecker.org/> to check if the site is online!")
                 return
 
             try:

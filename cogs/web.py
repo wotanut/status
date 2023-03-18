@@ -80,7 +80,8 @@ class Web(commands.GroupCog):
     @tasks.loop(minutes=1)
     async def website(self):
         async with aiohttp.ClientSession() as session:
-            try:
+            a = 1
+            if a == 1:
                 results = collection.find()
                 for result in results:
                         async with session.get(result["_id"]) as r:
@@ -91,13 +92,19 @@ class Web(commands.GroupCog):
                                         server = result[k][0]
                                         channel = self.client.get_channel(server)
                                         down_message = result[k][1]
-                                        auto_publish = result[k][2]
-                                        guild_id = result[k][3]
-                                        already_down = result[k][4]
+                                        up_message = result[k][2]
+                                        auto_publish = result[k][3]
+                                        guild_id = result[k][4]
+                                        already_down = result[k][5]
                                         if already_down == False:
                                             return
-                                        collection.update_one({"_id": url}, {"$set" : {f"{guild_id}": [channel ,down_message,auto_publish, guild_id, already_down]}})
-                                        pass
+                                        up_msg = await channel.send(up_message)
+                                        collection.update_one({"_id": result["_id"]}, {"$set" : {f"{guild_id}": [server ,down_message, up_message, auto_publish, guild_id, already_down]}})
+                                        if auto_publish == True:
+                                            try:
+                                                await up_msg.publish()
+                                            except:
+                                                pass
                             else:
                                 await session.close()
                                 for k, v in result.items():
@@ -105,29 +112,30 @@ class Web(commands.GroupCog):
                                         server = result[k][0]
                                         channel = self.client.get_channel(server)
                                         down_message = result[k][1]
-                                        auto_publish = result[k][2]
-                                        guild_id = result[k][3]
-                                        already_down = result[k][4]
+                                        up_message = result[k][2]
+                                        auto_publish = result[k][3]
+                                        guild_id = result[k][4]
+                                        already_down = result[k][5]
                                         if already_down == True:
                                             return
                                         down_msg = await channel.send(down_message)
                                         already_down = True
-                                        collection.update_one({"_id": result["_id"]}, {"$set" : {f"{guild_id}": [channel,down_message,auto_publish, guild_id, already_down]}})
+                                        collection.update_one({"_id": result["_id"]}, {"$set" : {f"{guild_id}": [server ,down_message, up_message, auto_publish, guild_id, already_down]}})
 
                                         if auto_publish == True:
                                             try:
                                                 await down_msg.publish()
                                             except:
                                                 pass
-            except Exception as e:
-                print(e)
+
 
     @app_commands.command(description="Adds a Website to watch for status changes")
     @app_commands.describe(website="The website to watch the status of")
     @app_commands.describe(channel="The Channel to send down messages to")
     @app_commands.describe(down_message="The down message to send to the channel")
-    @app_commands.describe(auto_publish="Whether the bot should publish the down message")
-    async def add(self, interaction: discord.Interaction, website: str,channel: discord.TextChannel, down_message: str, auto_publish: bool = False):
+    @app_commands.describe(up_message="The up message to send to the channel when your website is back up")
+    @app_commands.describe(auto_publish="Whether the bot should publish the down message/up message")
+    async def add(self, interaction: discord.Interaction, website: str,channel: discord.TextChannel, down_message: str, up_message:str, auto_publish: bool = False):
         already_down = False
         async with aiohttp.ClientSession() as session:
             try:
@@ -135,12 +143,6 @@ class Web(commands.GroupCog):
             except Exception as e:
                 await interaction.response.send_message(f"{e} That isn't a vaild website please try this instead <https://{e}>")
                 return
-            try:
-                if website.startswith('http'):
-                    await interaction.response.send_message(f"The Link is vaild but you can only use https \n Please try this command again but with https://")
-                    return
-            except Exception as e:
-                print(e)
 
             try:
                 channel = interaction.client.get_channel(int(channel.id))
@@ -161,9 +163,11 @@ class Web(commands.GroupCog):
                 await interaction.response.send_message("I cannot manage messages in that channel")
                 return
             try:
-                collection.insert_one({"_id": website, f"{interaction.guild.id}": [channel.id,down_message,auto_publish, interaction.guild.id, already_down ]})
+                down = False
+                collection.insert_one({"_id": website, f"{interaction.guild.id}": [channel.id,down_message,up_message, auto_publish, interaction.guild.id, down ]})
             except:
-                collection.update_one({"_id": website}, {"$set" : {f"{interaction.guild.id}": [channel.id,down_message,auto_publish, interaction.guild.id]}})
+                down = False
+                collection.update_one({"_id": website}, {"$set" : {f"{interaction.guild.id}": [channel.id,down_message, up_message, auto_publish, interaction.guild.id, down]}})
 
             await interaction.response.send_message(f"Watching <{website}> I will alert you if their status changes")
 

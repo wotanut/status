@@ -1,6 +1,7 @@
 import os
 import discord
 from discord import app_commands
+from discord.ext import tasks, commands
 import datetime
 import asyncio
 import aiohttp
@@ -28,111 +29,29 @@ intents.members = True
 
 startTime = 0
 
-bot = discord.Client(intents=intents)
+bot = commands.Bot(command_prefix="/", intents=intents)
 
-tree = app_commands.CommandTree(bot)
+
 
 @bot.event 
 async def on_ready():  # When the bot is ready
-    tree.add_command(Bot())
-    tree.add_command(Misc())
-    tree.add_command(Minecraft())
-    tree.add_command(Web())
-
-    await tree.sync()  # Syncs the command tree
-
     print("Ready!")
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="over your bots!"))
     print(bot.user)  # Prints the bot's username and identifier
+    try:
+        bot.tree.add_command(Bot())
+        bot.tree.add_command(Misc())
+        bot.tree.add_command(Minecraft())
+        await bot.load_extension("cogs.web")
 
-    # Unused variable, why?
-    #startTime = time()
+        await bot.tree.sync()  # Syncs the command tree
+    except: return
+
+        
+
 
 updated = []
 
-@app_commands.command(description="Give some information about the bot")
-async def stats(interaction: discord.Interaction):
-    members = 0
-    for guild in bot.guilds:
-        members += guild.member_count - 1
-
-    
-    embed=discord.Embed(title="Status Checker Stats")
-    embed.set_author(name="Concept by SamBot#7421", url="https://github.com/wotanut")
-    embed.add_field(name="Guilds", value=f"```{len(bot.guilds)}```", inline=True) 
-    embed.add_field(name="Users", value=f"```{members}```", inline=True)
-    embed.set_footer(text="Thank you for supporting Status Checker :)")
-    await interaction.response.send_message(embed=embed)
-
-
-# Isn't this supposed to be in bots.py?
-@tree.command(description="Adds a bot to watch for status changes")
-@app_commands.describe(user="The user to watch the status of")
-@app_commands.describe(channel="The Channel to send down messages to")
-@app_commands.describe(down_message="The down message to send to the channel")
-@app_commands.describe(auto_publish="Whether the bot should publish the down message")
-@app_commands.describe(dm="Whether the bot should Direct Message you")
-@app_commands.describe(lock="Whether the bot should Lock the server if the bot goes down")
-@app_commands.checks.has_permissions(manage_channels=True)
-async def add(interaction: discord.Interaction, user: discord.User,channel: discord.TextChannel, down_message: str, auto_publish: bool = False, dm:bool = False, lock:bool = False):
-    """Adds a bot to watch for status changes"""
-
-    if dm == False:
-        owner = 0
-    elif dm == True:
-        owner = interaction.user.id
-
-    try:
-        channel = bot.get_channel(int(channel.id))
-        if type(channel) != discord.channel.TextChannel:
-            await interaction.response.send_message("That doesn't look like a text channel to me")
-            return
-        if auto_publish == True and channel.is_news() == False:
-            auto_publish = False
-    except Exception as e:
-        await interaction.response.send_message(f"Failed to get channel, this is usually becuase I do not have access or the channel does not exist. \n Error: || {e} ||")
-        return
-
-    if user == bot.user.id:
-        await interaction.response.send_message("You cannot add me for status checks\nYou can only add other bots")
-        return
-        
-    # get the bot
-    if not user.bot:
-        await interaction.response.send_message("For privacy reasons I can only track bots")
-        return
-
-    # Instead of try/catch, just check for permissions
-    permissionsInChannel = channel.permissions_for(channel.guild.me)
-    if not permissionsInChannel.send_messages: 
-        await interaction.response.send_message("I cannot send messages in that channel")
-        return
-    if not permissionsInChannel.manage_messages: # Needed to be able to publish messages in an announcements channel
-        await interaction.response.send_message("I cannot manage messages in that channel")
-        return
-
-    if interaction.guild.me.guild_permissions.manage_channels == False and lock == False:
-        await interaction.response.send_message("In order to lock the server I need to have manage channels permissions")
-        return
-
-    # If bot has all needed permissions, send a message in that channel (and catch the error if it fails somehow)
-    try:
-        message = await channel.send("<a:loading:949590942925611058> Loading Status Checker information")
-    except:
-        await interaction.response.send_message("I do not have permissions to send messages in that channel")
-        return
-
-    try:
-        collection.insert_one({"_id": user.id, f"{interaction.guild.id}": [channel.id,message.id,down_message,auto_publish,owner,lock]})
-    except:
-        collection.update_one({"_id": user.id}, {"$set" : {f"{interaction.guild.id}": [channel.id,message.id,down_message,auto_publish,owner,lock]}})
-
-    await message.edit(content=f"Status Checker information loaded\nWatching {user.mention}")
-    await interaction.response.send_message(f"Watching {user.mention} I will alert you if their status changes")
-
-@tree.command(description="Check the latency of a bot")
-async def ping(interaction: discord.Interaction):
-    await interaction.response.send_message(f":ping_pong: Pong!\n **Bot**: {round(bot.latency * 1000)} ms")  
 
 @bot.event
 async def on_presence_update(before,after):
@@ -268,5 +187,6 @@ async def on_guild_join(guild):
             pass
 
 
+
 # runs the bot
-bot.run(os.environ.get("DISCORD_BOT_SECRET"))
+bot.run(os.environ.get("DISCORD_TOKEN"))

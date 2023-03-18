@@ -98,6 +98,7 @@ class Web(commands.GroupCog):
                                         already_down = result[k][5]
                                         if already_down == False:
                                             return
+                                        already_down = False
                                         up_msg = await channel.send(up_message)
                                         collection.update_one({"_id": result["_id"]}, {"$set" : {f"{guild_id}": [server ,down_message, up_message, auto_publish, guild_id, already_down]}})
                                         if auto_publish == True:

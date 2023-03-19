@@ -25,7 +25,7 @@ class Minecraft(app_commands.Group):
                 await interaction.response.send_message(f"The server could not be found.")
                 return
         status = server.status()
-        await interaction.response.send_message(f"The server has {status.players.online} players and replied in {status.latency} ms")
+        await interaction.response.send_message(f"The server has {status.players.online} players")
 
     @app_commands.command(description="Check the latency of a Minecraft server")
     @app_commands.describe(ip = "The IP of the server to check on")

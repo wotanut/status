@@ -1,4 +1,3 @@
-import json
 from dataclasses import dataclass
 from enum import Enum
 import datetime
@@ -77,13 +76,16 @@ class Notification():
     """
     Attributes
     ----------
+    id: int
+		The id of the notification
     type : NotificationType
         The type of notification
     target : str
-        The target of the notification
+        The target of the notification, must be consistent with the type
     Payload : str
         The payload of the notification
     """
+    id: int
     type: NotificationType
     target: str
     payload: str

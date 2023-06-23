@@ -3,59 +3,17 @@ from dataclasses import dataclass
 from enum import Enum
 import datetime
 
-@dataclass
-class Application:
-    """
-    Parameters
-    ----------
-    id : int
-        The id of the application
-    type : json
-        The type of the application
-    notifications : json
-        Notifications for the application
-    
-    Returns
-    -------
-    Application
-        The application
-    """
-    id: int
-    type: json
-    notifications: json
-
-@dataclass
-class User:
-    """
-    Parameters
-    ----------
-    id : int
-        The id of the user
-    applications : json
-        The applications the user has
-
-    Returns
-    -------
-    User
-        The user
-    """
-    id: int
-    applications: json
 
 class Meta:
     """
     Metadata for Status Checker
 
-    Parameters
-    ----------
-    None
-
     Attributes
     ----------
     version : str
-        The version of the Status Checker
+        The version of Status Checker
     version_name : str
-        The name of the version of the Status Checker
+        The name of the version of Status Checker
     start_time : datetime
         The time the Status Checker was started
     """
@@ -63,29 +21,17 @@ class Meta:
     version_name = "Finley"
     start_time = datetime.datetime.now()
 
-@dataclass
-class Notification():
+class ApplicationType:
     """
-    Parameters
+    Attributes
     ----------
-    type : str
-        The type of notification
-    target : str
-        The target of the notification
-    Payload : str
-        The payload of the notification
 
-    
-    Returns
-    -------
-    notification
-        The notification
     """
-    type: str
-    target: str
-    payload: str
+    DISCORD_BOT = "DBOT"
+    WEB = "WEB"
+    MINECRAFT = "MINECRAFT"
 
-class notificationType(Enum):
+class NotificationType(Enum):
     """
     Supported types of notifications
 
@@ -112,3 +58,50 @@ class notificationType(Enum):
     DISCORD_DM = "DISCORD_DM"
     DISCORD_CHANNEL = "DISCORD_CHANNEL"
     SMS = "SMS"
+
+@dataclass
+class User:
+    """
+    Attributes
+    ----------
+    id : int
+        The id of the user, this is the same as their discord ID
+    notifications : List
+		A list of notification ID's that the user owns
+    """
+    id: int
+    notifications: list
+
+@dataclass
+class Notification():
+    """
+    Attributes
+    ----------
+    type : NotificationType
+        The type of notification
+    target : str
+        The target of the notification
+    Payload : str
+        The payload of the notification
+    """
+    type: NotificationType
+    target: str
+    payload: str
+
+@dataclass
+class Application:
+    """
+    Attributes
+    ----------
+    id : int
+        The id of the application
+    type : AplicationType
+		The type of application
+    notifications : list
+        A list of notifications that should be fired when the application goes down
+    """
+    id: int
+    name: str
+    icon: str
+    type: ApplicationType
+    notifications: list

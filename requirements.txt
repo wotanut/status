@@ -1,8 +1,8 @@
-discord.py
-asyncio
-datetime
-python_dotenv
-quart
-mcstatus
-quart_discord
-psutil
+discord.py==1.7.3
+mcstatus==10.0.3
+psutil==5.9.5
+pytest==7.3.2
+python-dotenv==1.0.0
+quart==0.18.4
+Quart_Discord==2.1.4
+Requests==2.31.0

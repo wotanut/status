@@ -30,7 +30,7 @@ class TestData:
         assert notif.DISCORD_CHANNEL.value == "DISCORD_CHANNEL"
         assert notif.SMS.value == "SMS"
 
-# TODO: Properly setup the database for each test 
+# TODO: Properly setup the database for each test
 
 class TestDatabase:
 
@@ -83,7 +83,7 @@ class TestDatabase:
         json = db._DatabaseV2__add_json({"test_1": "_test_key"},{"test_2":"test_value"})
         assert json == {"test_1": "_test_key","test_2":"test_value"}
         assert json != {"test_1": "_test_key"}
-    
+
     def test_remove_json(self):
         db = database_v2.DatabaseV2()
         json = db._DatabaseV2__remove_json({"test_1": "_test_key","test_2":"test_value"},"test_2")
@@ -120,8 +120,8 @@ class TestDatabase:
         assert db.get_all_applications() == []
         app = data.Application(id=1,type=json.dumps(self.json_type_i),notifications=json.dumps(self.json_notifications_i))
         db.add_application_to_database(app)
-        
-        # assert db.get_all_applications() == [app]
+
+        assert db.get_all_applications() == [app]
         assert db.get_application_from_database(1) == app
         assert db.get_application_from_database(2) == None
         assert db.get_application_from_database() == ValueError
@@ -142,9 +142,9 @@ class TestDatabase:
 
 
 
-        
 
 
-        
-        
+
+
+
 # NOTE: The test for driver is not required, I plan to do more things with the driver seperatly from this project.

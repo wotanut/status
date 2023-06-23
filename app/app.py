@@ -80,7 +80,7 @@ async def on_ready():
 
     # start checking the services
 
-    bot.loop.create_task(app.run_task(host="0.0.0.0", port=1234))
+    bot.loop.create_task(app.run_task(host="0.0.0.0", port=5000))
     bot.loop.create_task(check_applications())
 
     # sync the commands

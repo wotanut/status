@@ -3,3 +3,4 @@ __pycache__
 .DS_Store
 *.db
 .pytest_cache
+*.__init__.pyc

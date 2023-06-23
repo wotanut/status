@@ -2,7 +2,7 @@
 import pytest
 
 # local imports
-from ..app.utilities import data,driver, database_v2
+from app.utilities import data,driver, database_v2
 
 # other imports
 import json
